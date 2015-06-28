@@ -1,0 +1,43 @@
+{
+  "author": "Christoph Guttandin",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "stage": 0
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "di": "^2.0.0-pre-14",
+    "midi-file-slicer": "^0.1.0",
+    "worker-timers": "0.0.1"
+  },
+  "description": "A simple midi player. It sends midi messages to connected devices.",
+  "devDependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.1",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-karma": "^0.11.1",
+    "karma": "^0.12.37",
+    "karma-browserify": "^4.2.1",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-sinon-chai": "^1.0.0",
+    "load-grunt-config": "^0.17.1",
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.4"
+  },
+  "main": "src/module.js",
+  "name": "midi-player",
+  "private": true,
+  "readme": "README.md",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "version": "0.0.0"
+}
