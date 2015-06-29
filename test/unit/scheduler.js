@@ -33,18 +33,22 @@ describe('scheduler', function () {
 
             scheduler.on('advanced', advanced);
 
+            performance.now.returns(17300);
             workerTimers.flushInterval(300);
 
             expect(advanced).to.not.been.called;
 
+            performance.now.returns(17500);
             workerTimers.flushInterval(200);
 
             expect(advanced).to.been.calledOnce;
 
+            performance.now.returns(17600);
             workerTimers.flushInterval(100);
 
             expect(advanced).to.been.calledOnce;
 
+            performance.now.returns(18100);
             workerTimers.flushInterval(500);
 
             expect(advanced).to.been.calledTwice;
@@ -55,10 +59,12 @@ describe('scheduler', function () {
 
             scheduler.on('advanced', advanced);
 
+            performance.now.returns(17500);
             workerTimers.flushInterval(500);
 
             expect(advanced).to.been.calledWithExactly(18, 18.5);
 
+            performance.now.returns(18000);
             workerTimers.flushInterval(500);
 
             expect(advanced).to.been.calledWithExactly(18.5, 19);
@@ -87,18 +93,22 @@ describe('scheduler', function () {
         });
 
         it('should grow in steps of 0.5 seconds as the timer advances', function () {
+            performance.now.returns(17300);
             workerTimers.flushInterval(300);
 
             expect(scheduler.lookahead).to.equal(18);
 
+            performance.now.returns(17500);
             workerTimers.flushInterval(200);
 
             expect(scheduler.lookahead).to.equal(18.5);
 
+            performance.now.returns(17600);
             workerTimers.flushInterval(100);
 
             expect(scheduler.lookahead).to.equal(18.5);
 
+            performance.now.returns(18100);
             workerTimers.flushInterval(500);
 
             expect(scheduler.lookahead).to.equal(19);

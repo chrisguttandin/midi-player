@@ -15,7 +15,7 @@ class Scheduler extends EventEmitter {
         this._lookahead = (performance.now() / 1000) + (INTERVAL * 2);
         this._performance = performance;
 
-        workerTimers.setInterval(::this._advance, INTERVAL * 1000);
+        workerTimers.setInterval(::this._advance, INTERVAL * 100);
     }
 
     get currentTime () {
@@ -27,11 +27,13 @@ class Scheduler extends EventEmitter {
     }
 
     _advance () {
-        let previousLookahead = this._lookahead;
+        if ((this._performance.now() / 1000) >= (this._lookahead - INTERVAL)) {
+            let previousLookahead = this._lookahead;
 
-        this._lookahead += INTERVAL;
+            this._lookahead += INTERVAL;
 
-        this.emit('advanced', previousLookahead, this._lookahead);
+            this.emit('advanced', previousLookahead, this._lookahead);
+        }
     }
 
 }
