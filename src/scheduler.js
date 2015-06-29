@@ -12,7 +12,7 @@ class Scheduler extends EventEmitter {
     constructor (performance, workerTimers) {
         super();
 
-        this._lookaheadWithOffset = (performance.now() / 1000) + (INTERVAL * 2);
+        this._lookahead = (performance.now() / 1000) + (INTERVAL * 2);
         this._performance = performance;
 
         workerTimers.setInterval(::this._advance, INTERVAL * 1000);
@@ -23,15 +23,15 @@ class Scheduler extends EventEmitter {
     }
 
     get lookahead () {
-        return this._lookaheadWithOffset;
+        return this._lookahead;
     }
 
     _advance () {
-        let previousLookahead = this._lookaheadWithOffset;
+        let previousLookahead = this._lookahead;
 
-        this._lookaheadWithOffset += INTERVAL;
+        this._lookahead += INTERVAL;
 
-        this.emit('advanced', previousLookahead, this._lookaheadWithOffset);
+        this.emit('advanced', previousLookahead, this._lookahead);
     }
 
 }
