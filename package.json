@@ -32,9 +32,15 @@
     "mocha": "^2.2.5",
     "sinon": "^1.15.4"
   },
+  "homepage": "https://github.com/chrisguttandin/midi-player",
+  "license": "MIT",
   "main": "src/module.js",
   "name": "midi-player",
   "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrisguttandin/midi-player.git"
+  },
   "scripts": {
     "test": "grunt test"
   },
