@@ -34,7 +34,6 @@
   },
   "main": "src/module.js",
   "name": "midi-player",
-  "private": true,
   "readme": "README.md",
   "scripts": {
     "test": "grunt test"
