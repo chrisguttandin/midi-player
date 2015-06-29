@@ -48,13 +48,20 @@ describe('MidiPlayer', function () {
 
         it('should schedule all events up to the lookahead', function () {
             var event,
-                json = 'a fake midi representation',
+                json,
                 midiFileSlicer,
                 midiOutput,
                 sequence;
 
             event = {
+                noteOn: 'a fake note on event',
                 time: 0.5
+            };
+
+            json = {
+                tracks: [
+                    'a fake track'
+                ]
             };
 
             midiOutput = {
