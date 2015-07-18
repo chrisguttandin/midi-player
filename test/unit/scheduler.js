@@ -62,12 +62,12 @@ describe('scheduler', function () {
             performance.now.returns(17500);
             workerTimers.flushInterval(500);
 
-            expect(advanced).to.been.calledWithExactly(18, 18.5);
+            expect(advanced).to.been.calledWithExactly(18000, 18500);
 
             performance.now.returns(18000);
             workerTimers.flushInterval(500);
 
-            expect(advanced).to.been.calledWithExactly(18.5, 19);
+            expect(advanced).to.been.calledWithExactly(18500, 19000);
         });
 
     });
@@ -75,13 +75,13 @@ describe('scheduler', function () {
     describe('currentTime', function () {
 
         it('should return the currentTime in relation to window.performance.now()', function () {
-            expect(scheduler.currentTime).to.equal(17);
+            expect(scheduler.currentTime).to.equal(17000);
         });
 
         it('should update the currentTime in relation to window.performance.now()', function () {
             performance.now.returns(20000); // 20 seconds
 
-            expect(scheduler.currentTime).to.equal(20);
+            expect(scheduler.currentTime).to.equal(20000);
         });
 
     });
@@ -89,29 +89,29 @@ describe('scheduler', function () {
     describe('lookahead', function () {
 
         it('should set the lookahead to one', function () {
-            expect(scheduler.lookahead).to.equal(18);
+            expect(scheduler.lookahead).to.equal(18000);
         });
 
         it('should grow in steps of 0.5 seconds as the timer advances', function () {
             performance.now.returns(17300);
             workerTimers.flushInterval(300);
 
-            expect(scheduler.lookahead).to.equal(18);
+            expect(scheduler.lookahead).to.equal(18000);
 
             performance.now.returns(17500);
             workerTimers.flushInterval(200);
 
-            expect(scheduler.lookahead).to.equal(18.5);
+            expect(scheduler.lookahead).to.equal(18500);
 
             performance.now.returns(17600);
             workerTimers.flushInterval(100);
 
-            expect(scheduler.lookahead).to.equal(18.5);
+            expect(scheduler.lookahead).to.equal(18500);
 
             performance.now.returns(18100);
             workerTimers.flushInterval(500);
 
-            expect(scheduler.lookahead).to.equal(19);
+            expect(scheduler.lookahead).to.equal(19000);
         });
 
     });

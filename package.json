@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "di": "^2.0.0-pre-14",
-    "midi-file-slicer": "^0.1.0",
+    "midi-file-slicer": "^1.0.1",
     "worker-timers": "0.0.2"
   },
   "description": "A simple midi player. It sends midi messages to connected devices.",

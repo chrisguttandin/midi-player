@@ -55,7 +55,7 @@ describe('MidiPlayer', function () {
 
             event = {
                 noteOn: 'a fake note on event',
-                time: 0.5
+                time: 500
             };
 
             json = {
@@ -82,13 +82,13 @@ describe('MidiPlayer', function () {
 
             midiMessageEncoder.encode.returns(sequence);
 
-            scheduler.currentTime = 0.2;
-            scheduler.lookahead = 1;
+            scheduler.currentTime = 200;
+            scheduler.lookahead = 1000;
 
             midiPlayer.play();
 
             expect(midiFileSlicer.slice).to.have.been.calledOnce;
-            expect(midiFileSlicer.slice).to.have.been.calledWithExactly(0, 0.8);
+            expect(midiFileSlicer.slice).to.have.been.calledWithExactly(0, 800);
 
             expect(midiMessageEncoder.encode).to.have.been.calledOnce;
             expect(midiMessageEncoder.encode).to.have.been.calledWithExactly(event);
