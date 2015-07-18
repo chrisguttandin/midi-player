@@ -94,7 +94,7 @@ describe('MidiPlayer', function () {
             expect(midiMessageEncoder.encode).to.have.been.calledWithExactly(event);
 
             expect(midiOutput.send).to.have.been.calledOnce;
-            expect(midiOutput.send).to.have.been.calledWithExactly(sequence, 0.7);
+            expect(midiOutput.send).to.have.been.calledWithExactly(sequence, 700);
         });
 
     });

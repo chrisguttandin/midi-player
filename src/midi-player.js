@@ -57,7 +57,7 @@ function midiPlayerInjector (/*EventEmitter, */midiMessageEncoder, midiFileSlice
 
             events
                 .filter((event) => this._isSendableEvent(event))
-                .forEach((event) => this._midiOutput.send(midiMessageEncoder.encode(event), previousLookahead + event.time));
+                .forEach((event) => this._midiOutput.send(midiMessageEncoder.encode(event), (previousLookahead + event.time) * 1000));
 
             let endedTracks = events.filter(::this._isEndOfTrack).length;
 
