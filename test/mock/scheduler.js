@@ -10,12 +10,14 @@ function injector () {
     if (SchedulerMock === undefined) {
 
         SchedulerMock = {
-            on: sinon.stub()
+            on: sinon.stub(),
+            removeListener: sinon.stub()
         };
 
     } else {
 
         SchedulerMock.on.reset();
+        SchedulerMock.removeListener.reset();
 
     }
 

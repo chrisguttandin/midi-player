@@ -46,10 +46,11 @@ function midiPlayerInjector (/*EventEmitter, */midiMessageEncoder, midiFileSlice
 
             this._endedTracks = 0;
             this._offset = currentTime - this._currentTime;
-            this._schedule(currentTime, scheduler.lookahead);
-
             this._advancedListener = ::this._schedule;
+
             scheduler.on('advanced', this._advancedListener);
+
+            this._schedule(currentTime, scheduler.lookahead);
         }
 
         _schedule (previousLookahead, currentLookahead) {

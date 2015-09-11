@@ -46,18 +46,12 @@ describe('MidiPlayer', function () {
 
     describe('play()', function () {
 
-        it('should schedule all events up to the lookahead', function () {
-            var event,
-                json,
-                midiFileSlicer,
-                midiOutput,
-                sequence;
+        var json,
+            midiFileSlicer,
+            midiOutput,
+            sequence;
 
-            event = {
-                noteOn: 'a fake note on event',
-                time: 500
-            };
-
+        beforeEach(function () {
             json = {
                 tracks: [
                     'a fake track'
@@ -75,15 +69,22 @@ describe('MidiPlayer', function () {
 
             sequence = 'a fake sequence';
 
-            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
-            midiFileSlicer.slice.returns([
-                event
-            ]);
-
             midiMessageEncoder.encode.returns(sequence);
 
             scheduler.currentTime = 200;
             scheduler.lookahead = 1000;
+        });
+
+        it('should schedule all events up to the lookahead', function () {
+            var event = {
+                    noteOn: 'a fake note on event',
+                    time: 500
+                };
+
+            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
+            midiFileSlicer.slice.returns([
+                event
+            ]);
 
             midiPlayer.play();
 
@@ -95,6 +96,25 @@ describe('MidiPlayer', function () {
 
             expect(midiOutput.send).to.have.been.calledOnce;
             expect(midiOutput.send).to.have.been.calledWithExactly(sequence, 700);
+        });
+
+        it('should handle files which are shorter than the lookahead', function () {
+            var event = {
+                    endOfTrack: true,
+                    time: 500
+                };
+
+            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
+            midiFileSlicer.slice.returns([
+                event
+            ]);
+
+            midiPlayer.play();
+
+            expect(scheduler.on).to.have.been.calledOnce;
+            expect(scheduler.removeListener).to.have.been.calledOnce;
+
+            expect(scheduler.on).to.have.been.calledBefore(scheduler.removeListener);
         });
 
     });
