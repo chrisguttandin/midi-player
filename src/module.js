@@ -1,11 +1,11 @@
 import 'reflect-metadata';
-import { MidiFileSlicerFactory } from 'midi-file-slicer-factory';
-import { MidiMessageEncoder } from 'midi-message-encoder';
-import { MidiPlayerFactory } from 'midi-player-factory';
-import { Performance } from 'injector/performance';
+import { MidiFileSlicerFactory } from './midi-file-slicer-factory';
+import { MidiMessageEncoder } from './midi-message-encoder';
+import { MidiPlayerFactory } from './midi-player-factory';
+import { Performance } from './injector/performance';
 import { ReflectiveInjector } from '@angular/core/src/di/reflective_injector';
-import { Scheduler } from 'scheduler';
-import { WorkerTimers } from 'injector/worker-timers';
+import { Scheduler } from './scheduler';
+import { WorkerTimers } from './injector/worker-timers';
 
 /* eslint-disable indent */
 const injector = ReflectiveInjector.resolveAndCreate([
