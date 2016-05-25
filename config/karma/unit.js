@@ -24,24 +24,22 @@ module.exports = function (config) {
 
     if (process.env.TRAVIS) {
         configuration.browsers = [
-            'ChromeCanarySauceLabs',
-            'FirefoxDeveloperSauceLabs'
+            'ChromeSauceLabs',
+            'FirefoxSauceLabs'
         ];
 
         configuration.captureTimeout = 120000;
 
         configuration.customLaunchers = {
-            ChromeCanarySauceLabs: {
+            ChromeSauceLabs: {
                 base: 'SauceLabs',
                 browserName: 'chrome',
-                platform: 'OS X 10.11',
-                version: 'dev'
+                platform: 'OS X 10.11'
             },
-            FirefoxDeveloperSauceLabs: {
+            FirefoxSauceLabs: {
                 base: 'SauceLabs',
                 browserName: 'firefox',
-                platform: 'OS X 10.11',
-                version: 'dev'
+                platform: 'OS X 10.11'
             }
         };
 
