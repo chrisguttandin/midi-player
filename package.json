@@ -19,6 +19,7 @@
   "devDependencies": {
     "babelify": "^6.3.0",
     "browserify": "^11.1.0",
+    "chai": "^3.5.0",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-karma": "^0.12.1",
@@ -29,8 +30,11 @@
     "karma-mocha": "^0.2.0",
     "karma-sinon-chai": "^1.0.0",
     "load-grunt-config": "^0.17.2",
+    "lolex": "^1.5.0",
     "mocha": "^2.3.2",
-    "sinon": "^1.16.1"
+    "sinon": "^1.16.1",
+    "sinon-chai": "^2.8.0",
+    "worker-timers-mock": "0.0.1"
   },
   "homepage": "https://github.com/chrisguttandin/midi-player",
   "license": "MIT",
