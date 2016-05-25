@@ -1,5 +1,3 @@
-'use strict';
-
 export function Performance () {
-    return window.performance;
+    return window.performance; // eslint-disable-line no-undef
 };

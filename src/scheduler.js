@@ -1,5 +1,3 @@
-'use strict';
-
 import { EventEmitter } from 'events';
 import { Inject } from '@angular/core/src/di/decorators';
 import { Performance } from './injector/performance';

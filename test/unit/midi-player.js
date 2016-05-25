@@ -1,5 +1,3 @@
-'use strict';
-
 import 'reflect-metadata';
 import { MidiFileSlicerFactory } from '../../src/midi-file-slicer-factory';
 import { MidiFileSlicerFactoryMock } from '../mock/midi-file-slicer-factory';
@@ -9,6 +7,7 @@ import { MidiPlayerFactory } from '../../src/midi-player-factory';
 import { ReflectiveInjector } from '@angular/core';
 import { Scheduler } from '../../src/scheduler';
 import { SchedulerMock } from '../mock/scheduler';
+import { stub } from 'sinon';
 
 describe('MidiPlayer', function () {
 
@@ -19,12 +18,14 @@ describe('MidiPlayer', function () {
         scheduler;
 
     beforeEach(function () {
+        /* eslint-disable indent */
         var injector = ReflectiveInjector.resolveAndCreate([
                 { provide: MidiFileSlicerFactory, useClass: MidiFileSlicerFactoryMock },
                 { provide: MidiMessageEncoder, useClass: MidiMessageEncoderMock },
                 MidiPlayerFactory,
                 { provide: Scheduler, useClass: SchedulerMock }
             ]);
+        /* eslint-enable indent */
 
         midiFileSlicerFactory = injector.get(MidiFileSlicerFactory);
         midiMessageEncoder = injector.get(MidiMessageEncoder);
@@ -38,12 +39,12 @@ describe('MidiPlayer', function () {
             var json = 'a fake midi representation';
 
             midiPlayer = midiPlayerFactory.create({
-                json: json
+                json
             });
 
             expect(midiFileSlicerFactory.create).to.have.been.calledOnce;
             expect(midiFileSlicerFactory.create).to.have.been.calledWithExactly({
-                json: json
+                json
             });
         });
 
@@ -64,12 +65,12 @@ describe('MidiPlayer', function () {
             };
 
             midiOutput = {
-                send: sinon.stub()
+                send: stub()
             };
 
             midiPlayer = midiPlayerFactory.create({
-                json: json,
-                midiOutput: midiOutput
+                json,
+                midiOutput
             });
 
             sequence = 'a fake sequence';
@@ -81,10 +82,12 @@ describe('MidiPlayer', function () {
         });
 
         it('should schedule all events up to the lookahead', function () {
+            /* eslint-disable indent */
             var event = {
                     noteOn: 'a fake note on event',
                     time: 500
                 };
+            /* eslint-enable indent */
 
             midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
             midiFileSlicer.slice.returns([
@@ -104,10 +107,12 @@ describe('MidiPlayer', function () {
         });
 
         it('should handle files which are shorter than the lookahead', function () {
+            /* eslint-disable indent */
             var event = {
                     endOfTrack: true,
                     time: 500
                 };
+            /* eslint-enable indent */
 
             midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
             midiFileSlicer.slice.returns([

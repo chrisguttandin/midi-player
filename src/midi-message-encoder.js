@@ -1,5 +1,3 @@
-'use strict';
-
 export class MidiMessageEncoder {
 
     encode (event) {
@@ -7,7 +5,7 @@ export class MidiMessageEncoder {
             let controllerChange = event.controllerChange;
 
             return [
-                0xB0 | event.channel,
+                0xB0 | event.channel, // eslint-disable-line no-bitwise
                 controllerChange.type,
                 controllerChange.value
             ];
@@ -15,7 +13,7 @@ export class MidiMessageEncoder {
             let noteOff = event.noteOff;
 
             return [
-                0x80 | event.channel,
+                0x80 | event.channel, // eslint-disable-line no-bitwise
                 noteOff.noteNumber,
                 noteOff.velocity
             ];
@@ -23,13 +21,13 @@ export class MidiMessageEncoder {
             let noteOn = event.noteOn;
 
             return [
-                0x90 | event.channel,
+                0x90 | event.channel, // eslint-disable-line no-bitwise
                 noteOn.noteNumber,
                 noteOn.velocity
             ];
         } else if ('programChange' in event) {
             return [
-                0xC0 | event.channel,
+                0xC0 | event.channel, // eslint-disable-line no-bitwise
                 event.programChange.programNumber
             ];
         }

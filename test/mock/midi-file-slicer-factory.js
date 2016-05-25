@@ -1,5 +1,3 @@
-'use strict';
-
 import { spy, stub } from 'sinon';
 
 export class MidiFileSlicerFactoryMock {
@@ -14,9 +12,11 @@ export class MidiFileSlicerFactoryMock {
     }
 
     create () {
+        /* eslint-disable indent */
         const midiFileSlicer = {
                   slice: stub()
               };
+        /* eslint-enable indent */
 
         this._midiFileSlicers.push(midiFileSlicer);
 

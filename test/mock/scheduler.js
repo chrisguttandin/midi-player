@@ -1,5 +1,3 @@
-'use strict';
-
 import { stub } from 'sinon';
 
 export class SchedulerMock {

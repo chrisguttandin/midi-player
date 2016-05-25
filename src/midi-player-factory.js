@@ -1,5 +1,3 @@
-'use strict';
-
 import { EventEmitter } from 'events';
 import { Inject } from '@angular/core/src/di/decorators';
 import { MidiFileSlicerFactory } from './midi-file-slicer-factory';
@@ -18,7 +16,7 @@ class MidiPlayer extends EventEmitter {
         this._endedTracks = null;
         this._json = json;
         this._midiFileSlicer = options.midiFileSlicerFactory.create({
-            json: json
+            json
         });
         this._midiMessageEncoder = options.midiMessageEncoder;
         this._midiOutput = options.midiOutput;
@@ -38,11 +36,13 @@ class MidiPlayer extends EventEmitter {
     }
 
     play () {
+        var currentTime;
+
         if (this._advancedListener !== null || this._endedTracks !== null) {
             throw new Error('The player is currently playing.');
         }
 
-        var currentTime = this._scheduler.currentTime;
+        currentTime = this._scheduler.currentTime;
 
         this._endedTracks = 0;
         this._offset = currentTime - this._currentTime;

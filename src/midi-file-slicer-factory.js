@@ -1,5 +1,3 @@
-'use strict';
-
 import { MidiFileSlicer } from 'midi-file-slicer';
 
 export class MidiFileSlicerFactory {

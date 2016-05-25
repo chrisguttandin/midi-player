@@ -1,5 +1,3 @@
-'use strict';
-
 import 'reflect-metadata';
 import { Performance } from '../../src/injector/performance';
 import { PerformanceMock } from '../mock/performance';
@@ -7,6 +5,7 @@ import { ReflectiveInjector } from '@angular/core';
 import { Scheduler } from '../../src/scheduler';
 import { WorkerTimers } from '../../src/injector/worker-timers';
 import { WorkerTimersMock } from '../mock/worker-timers';
+import { stub } from 'sinon';
 
 describe('Scheduler', function () {
 
@@ -15,11 +14,13 @@ describe('Scheduler', function () {
         workerTimers;
 
     beforeEach(function () {
+        /* eslint-disable indent */
         var injector = ReflectiveInjector.resolveAndCreate([
                 { provide: Performance, useFactory: PerformanceMock },
                 Scheduler,
                 { provide: WorkerTimers, useFactory: WorkerTimersMock }
             ]);
+        /* eslint-enable indent */
 
         performance = injector.get(Performance);
         workerTimers = injector.get(WorkerTimers);
@@ -32,7 +33,7 @@ describe('Scheduler', function () {
     describe('#advanced', function () {
 
         it('should fire an advanced event every half a second', function () {
-            var advanced = sinon.stub();
+            var advanced = stub();
 
             scheduler.on('advanced', advanced);
 
@@ -58,7 +59,7 @@ describe('Scheduler', function () {
         });
 
         it('should emit the previous and the current lookahead', function () {
-            var advanced = sinon.stub();
+            var advanced = stub();
 
             scheduler.on('advanced', advanced);
 
