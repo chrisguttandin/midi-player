@@ -1,8 +1,6 @@
 'use strict';
 
-var di = require('di');
-
-class MidiMessageEncoder {
+export class MidiMessageEncoder {
 
     encode (event) {
         if ('controllerChange' in event) {
@@ -38,7 +36,3 @@ class MidiMessageEncoder {
     }
 
 }
-
-di.annotate(MidiMessageEncoder);
-
-module.exports.MidiMessageEncoder = MidiMessageEncoder;

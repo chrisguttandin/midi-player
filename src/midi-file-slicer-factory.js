@@ -1,16 +1,11 @@
 'use strict';
 
-var di = require('di'),
-    MidiFileSlicer = require('midi-file-slicer').MidiFileSlicer;
+import { MidiFileSlicer } from 'midi-file-slicer';
 
-class MidiFileSlicerFactory {
+export class MidiFileSlicerFactory {
 
     create (options) {
         return new MidiFileSlicer(options);
     }
 
 }
-
-di.annotate(MidiFileSlicerFactory);
-
-module.exports.MidiFileSlicerFactory = MidiFileSlicerFactory;

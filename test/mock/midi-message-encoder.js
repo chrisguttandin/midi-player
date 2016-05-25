@@ -1,27 +1,11 @@
 'use strict';
 
-var di = require('di'),
-    MidiMessageEncoder = require('../../src/midi-message-encoder.js').MidiMessageEncoder,
-    MidiMessageEncoderMock,
-    sinon = require('sinon');
+import { stub } from 'sinon';
 
-function injector () {
+export class MidiMessageEncoderMock {
 
-    if (MidiMessageEncoderMock === undefined) {
-
-        MidiMessageEncoderMock = {
-            encode: sinon.stub()
-        };
-
-    } else {
-
-        MidiMessageEncoderMock.encode.reset();
-
+    constructor () {
+        this.encode = stub();
     }
 
-    return MidiMessageEncoderMock;
 }
-
-di.annotate(injector, new di.Provide(MidiMessageEncoder));
-
-module.exports.MidiMessageEncoderMock = injector;

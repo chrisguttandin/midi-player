@@ -1,11 +1,5 @@
 'use strict';
 
-var di = require('di');
-
-function injector () {
+export function Performance () {
     return window.performance;
-}
-
-di.annotate(injector);
-
-module.exports = injector;
+};

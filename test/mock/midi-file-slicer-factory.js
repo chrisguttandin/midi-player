@@ -1,37 +1,26 @@
 'use strict';
 
-var di = require('di'),
-    MidiFileSlicerFactory = require('../../src/midi-file-slicer-factory.js').MidiFileSlicerFactory,
-    MidiFileSlicerFactoryMock,
-    sinon = require('sinon');
+import { spy, stub } from 'sinon';
 
-function injector () {
+export class MidiFileSlicerFactoryMock {
 
-    if (MidiFileSlicerFactoryMock === undefined) {
-
-        MidiFileSlicerFactoryMock = {
-            create: sinon.spy(function () {
-                var midiFileSlicer = {
-                        slice: sinon.stub()
-                    };
-
-                MidiFileSlicerFactoryMock.midiFileSlicers.push(midiFileSlicer);
-
-                return midiFileSlicer;
-            })
-        };
-
-    } else {
-
-        MidiFileSlicerFactoryMock.create.reset();
-
+    constructor () {
+        this.create = spy(this.create);
+        this._midiFileSlicers = [];
     }
 
-    MidiFileSlicerFactoryMock.midiFileSlicers = [];
+    get midiFileSlicers () {
+        return this._midiFileSlicers;
+    }
 
-    return MidiFileSlicerFactoryMock;
+    create () {
+        const midiFileSlicer = {
+                  slice: stub()
+              };
+
+        this._midiFileSlicers.push(midiFileSlicer);
+
+        return midiFileSlicer;
+    }
+
 }
-
-di.annotate(injector, new di.Provide(MidiFileSlicerFactory));
-
-module.exports.MidiFileSlicerFactoryMock = injector;

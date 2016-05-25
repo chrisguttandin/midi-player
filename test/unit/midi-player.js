@@ -1,30 +1,35 @@
 'use strict';
 
-var di = require('di'),
-    MidiFileSlicerFactoryMock = require('../mock/midi-file-slicer-factory.js').MidiFileSlicerFactoryMock,
-    MidiMessageEncoderMock = require('../mock/midi-message-encoder.js').MidiMessageEncoderMock,
-    midiPlayerInjector = require('../../src/midi-player.js').midiPlayerInjector,
-    SchedulerMock = require('../mock/scheduler.js').SchedulerMock;
+import 'reflect-metadata';
+import { MidiFileSlicerFactory } from '../../src/midi-file-slicer-factory';
+import { MidiFileSlicerFactoryMock } from '../mock/midi-file-slicer-factory';
+import { MidiMessageEncoder } from '../../src/midi-message-encoder';
+import { MidiMessageEncoderMock } from '../mock/midi-message-encoder';
+import { MidiPlayerFactory } from '../../src/midi-player-factory';
+import { ReflectiveInjector } from '@angular/core';
+import { Scheduler } from '../../src/scheduler';
+import { SchedulerMock } from '../mock/scheduler';
 
 describe('MidiPlayer', function () {
 
     var midiFileSlicerFactory,
         midiMessageEncoder,
         midiPlayer,
-        MidiPlayer,
+        midiPlayerFactory,
         scheduler;
 
     beforeEach(function () {
-        var injector = new di.Injector([
-                MidiFileSlicerFactoryMock,
-                MidiMessageEncoderMock,
-                SchedulerMock
+        var injector = ReflectiveInjector.resolveAndCreate([
+                { provide: MidiFileSlicerFactory, useClass: MidiFileSlicerFactoryMock },
+                { provide: MidiMessageEncoder, useClass: MidiMessageEncoderMock },
+                MidiPlayerFactory,
+                { provide: Scheduler, useClass: SchedulerMock }
             ]);
 
-        midiFileSlicerFactory = injector.get(MidiFileSlicerFactoryMock);
-        midiMessageEncoder = injector.get(MidiMessageEncoderMock);
-        MidiPlayer = injector.get(midiPlayerInjector);
-        scheduler = injector.get(SchedulerMock);
+        midiFileSlicerFactory = injector.get(MidiFileSlicerFactory);
+        midiMessageEncoder = injector.get(MidiMessageEncoder);
+        midiPlayerFactory = injector.get(MidiPlayerFactory);
+        scheduler = injector.get(Scheduler);
     });
 
     describe('constructor', function () {
@@ -32,7 +37,7 @@ describe('MidiPlayer', function () {
         it('should initialize the MidiFileSlicerFactory', function () {
             var json = 'a fake midi representation';
 
-            midiPlayer = new MidiPlayer({
+            midiPlayer = midiPlayerFactory.create({
                 json: json
             });
 
@@ -62,7 +67,7 @@ describe('MidiPlayer', function () {
                 send: sinon.stub()
             };
 
-            midiPlayer = new MidiPlayer({
+            midiPlayer = midiPlayerFactory.create({
                 json: json,
                 midiOutput: midiOutput
             });

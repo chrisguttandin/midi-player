@@ -1,13 +1,13 @@
 'use strict';
 
-var di = require('di'),
-    EventEmitter = require('events').EventEmitter,
-    Performance = require('./injector/performance.js'),
-    WorkerTimers = require('./injector/worker-timers.js');
+import { EventEmitter } from 'events';
+import { Inject } from '@angular/core/src/di/decorators';
+import { Performance } from './injector/performance';
+import { WorkerTimers } from './injector/worker-timers';
 
 const INTERVAL = 500;
 
-class Scheduler extends EventEmitter {
+export class Scheduler extends EventEmitter {
 
     constructor (performance, workerTimers) {
         super();
@@ -38,6 +38,4 @@ class Scheduler extends EventEmitter {
 
 }
 
-di.annotate(Scheduler, new di.Inject(Performance, WorkerTimers));
-
-module.exports.Scheduler = Scheduler;
+Scheduler.parameters = [ [ new Inject(Performance) ], [ new Inject(WorkerTimers) ] ];

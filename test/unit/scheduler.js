@@ -1,25 +1,28 @@
 'use strict';
 
-var di = require('di'),
-    PerformanceMock = require('../mock/performance.js'),
-    Scheduler = require('../../src/scheduler.js').Scheduler,
-    WorkerTimersMock = require('../mock/worker-timers.js');
+import 'reflect-metadata';
+import { Performance } from '../../src/injector/performance';
+import { PerformanceMock } from '../mock/performance';
+import { ReflectiveInjector } from '@angular/core';
+import { Scheduler } from '../../src/scheduler';
+import { WorkerTimers } from '../../src/injector/worker-timers';
+import { WorkerTimersMock } from '../mock/worker-timers';
 
-describe('scheduler', function () {
+describe('Scheduler', function () {
 
-    var injector,
-        performance,
+    var performance,
         scheduler,
         workerTimers;
 
     beforeEach(function () {
-        injector = new di.Injector([
-            PerformanceMock,
-            WorkerTimersMock
-        ]);
+        var injector = ReflectiveInjector.resolveAndCreate([
+                { provide: Performance, useFactory: PerformanceMock },
+                Scheduler,
+                { provide: WorkerTimers, useFactory: WorkerTimersMock }
+            ]);
 
-        performance = injector.get(PerformanceMock);
-        workerTimers = injector.get(WorkerTimersMock);
+        performance = injector.get(Performance);
+        workerTimers = injector.get(WorkerTimers);
 
         performance.now.returns(17000); // 17 seconds
 

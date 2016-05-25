@@ -1,14 +1,17 @@
 'use strict';
 
-var di = require('di'),
-    MidiMessageEncoder = require('../../src/midi-message-encoder.js').MidiMessageEncoder;
+import 'reflect-metadata';
+import { MidiMessageEncoder } from '../../src/midi-message-encoder';
+import { ReflectiveInjector } from '@angular/core';
 
-describe('midiMessageEncoder', function () {
+describe('MidiMessageEncoder', function () {
 
     var midiMessageEncoder;
 
     beforeEach(function () {
-        var injector = new di.Injector();
+        var injector = ReflectiveInjector.resolveAndCreate([
+                MidiMessageEncoder
+            ]);
 
         midiMessageEncoder = injector.get(MidiMessageEncoder);
     });
