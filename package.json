@@ -33,7 +33,7 @@
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-githooks": "^0.6.0",
-    "grunt-karma": "^1.0.0",
+    "grunt-karma": "^2.0.0",
     "gruntify-eslint": "^2.0.0",
     "karma": "^0.13.9",
     "karma-browserify": "^5.0.5",
