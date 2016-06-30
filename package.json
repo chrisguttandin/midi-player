@@ -44,7 +44,7 @@
     "karma-firefox-launcher": "^1.0.0",
     "karma-mocha": "^1.1.0",
     "karma-sauce-launcher": "^1.0.0",
-    "karma-sinon-chai": "^1.0.0",
+    "karma-sinon-chai": "^1.2.2",
     "load-grunt-config": "^0.19.2",
     "lolex": "^1.5.0",
     "mocha": "^2.3.2",
