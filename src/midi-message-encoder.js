@@ -1,6 +1,6 @@
 export class MidiMessageEncoder {
 
-    encode (event) {
+    encode (event) { // eslint-disable-line class-methods-use-this
         if ('controllerChange' in event) {
             let controllerChange = event.controllerChange;
 

@@ -24,11 +24,11 @@ class MidiPlayer extends EventEmitter {
         this._scheduler = options.scheduler;
     }
 
-    _isEndOfTrack (event) {
+    static _isEndOfTrack (event) {
         return ('endOfTrack' in event);
     }
 
-    _isSendableEvent (event) {
+    static _isSendableEvent (event) {
         return (('controllerChange' in event) ||
             ('noteOff' in event) ||
             ('noteOn' in event) ||
@@ -57,10 +57,10 @@ class MidiPlayer extends EventEmitter {
         var events = this._midiFileSlicer.slice(previousLookahead - this._offset, currentLookahead - this._offset);
 
         events
-            .filter((event) => this._isSendableEvent(event))
+            .filter((event) => MidiPlayer._isSendableEvent(event))
             .forEach((event) => this._midiOutput.send(this._midiMessageEncoder.encode(event), previousLookahead + event.time));
 
-        let endedTracks = events.filter(::this._isEndOfTrack).length;
+        let endedTracks = events.filter(MidiPlayer._isEndOfTrack).length;
 
         this._endedTracks += endedTracks;
 
