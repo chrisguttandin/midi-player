@@ -62,7 +62,7 @@
     "url": "https://github.com/chrisguttandin/midi-player.git"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt lint && grunt test"
   },
   "version": "0.0.10"
 }
