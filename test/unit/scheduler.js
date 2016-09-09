@@ -25,7 +25,8 @@ describe('Scheduler', function () {
         performance = injector.get(Performance);
         workerTimers = injector.get(WorkerTimers);
 
-        performance.now.returns(17000); // 17 seconds
+        // Freeze performance.now() at 17 seconds.
+        performance.now.returns(17000);
 
         scheduler = injector.get(Scheduler);
     });
@@ -83,7 +84,8 @@ describe('Scheduler', function () {
         });
 
         it('should update the currentTime in relation to window.performance.now()', function () {
-            performance.now.returns(20000); // 20 seconds
+            // Freeze performance.now() at 20 seconds.
+            performance.now.returns(20000);
 
             expect(scheduler.currentTime).to.equal(20000);
         });
