@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Inject } from '@angular/core/src/di/decorators';
+import { Inject } from '@angular/core';
 import { Performance } from './injector/performance';
 import { WorkerTimers } from './injector/worker-timers';
 
