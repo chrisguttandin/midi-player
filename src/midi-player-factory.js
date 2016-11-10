@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Inject } from '@angular/core/src/di/decorators';
+import { Inject } from '@angular/core';
 import { MidiFileSlicerFactory } from './midi-file-slicer-factory';
 import { MidiMessageEncoder } from './midi-message-encoder';
 import { Scheduler } from './scheduler';
