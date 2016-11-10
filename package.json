@@ -17,7 +17,7 @@
     "url": "https://github.com/chrisguttandin/midi-player/issues"
   },
   "dependencies": {
-    "@angular/core": "2.1.2",
+    "@angular/core": "^2.1.2",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0",
     "babel-plugin-transform-function-bind": "^6.8.0",
     "babelify": "^7.3.0",
