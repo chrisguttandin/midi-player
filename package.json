@@ -51,7 +51,7 @@
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "watchify": "^3.7.0",
-    "worker-timers-mock": "1.0.1"
+    "worker-timers-mock": "1.0.2"
   },
   "homepage": "https://github.com/chrisguttandin/midi-player",
   "license": "MIT",
