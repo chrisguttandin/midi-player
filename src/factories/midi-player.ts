@@ -22,6 +22,8 @@ export class MidiPlayer {
 
     private _performance;
 
+    private _resolve;
+
     private _scheduler;
 
     private _schedulerSubscription;
@@ -58,9 +60,9 @@ export class MidiPlayer {
         this._endedTracks = 0;
 
         return new Promise((resolve, reject) => {
+            this._resolve = resolve;
             this._schedulerSubscription = this._scheduler
                 .subscribe({
-                    complete: () => resolve(),
                     error: (err) => reject(err),
                     next: ({ end, start }) => {
                         if (this._offset === null) {
@@ -70,6 +72,10 @@ export class MidiPlayer {
                         this._schedule(start, end);
                     }
                 });
+
+            if (this._resolve === null) {
+                this._schedulerSubscription.unsubscribe();
+            }
         });
     }
 
@@ -85,10 +91,16 @@ export class MidiPlayer {
         this._endedTracks += endedTracks;
 
         if (this._endedTracks === this._json.tracks.length) {
-            this._schedulerSubscription.unsubscribe();
+            if (this._schedulerSubscription !== null) {
+                this._schedulerSubscription.unsubscribe();
+            }
 
             this._schedulerSubscription = null;
             this._endedTracks = null;
+
+            this._resolve();
+
+            this._resolve = null;
         }
     }
 

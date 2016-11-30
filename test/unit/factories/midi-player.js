@@ -103,6 +103,19 @@ describe('MidiPlayer', () => {
             expect(midiOutput.send).to.have.been.calledWithExactly(sequence, 700);
         });
 
+        it('should return a promise', () => {
+            expect(midiPlayer.play()).to.be.a('promise');
+        });
+
+        it('should resolve the promise after playing the track', (done) => {
+            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
+            midiFileSlicer.slice.returns([ { delta: 0, endOfTrack: true } ]);
+
+            midiPlayer
+                .play()
+                .then(() => done());
+        });
+
     });
 
 });
