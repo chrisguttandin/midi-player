@@ -1,9 +1,7 @@
-import { stub } from 'sinon';
-
 export class MidiMessageEncoderMock {
 
     constructor () {
-        this.encode = stub();
+        this.encode = sinon.stub(); // eslint-disable-line no-undef
     }
 
 }

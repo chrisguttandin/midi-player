@@ -1,9 +1,7 @@
-import { spy, stub } from 'sinon';
-
 export class MidiFileSlicerFactoryMock {
 
     constructor () {
-        this.create = spy(this.create);
+        this.create = sinon.spy(this.create); // eslint-disable-line no-undef
         this._midiFileSlicers = [];
     }
 
@@ -12,11 +10,9 @@ export class MidiFileSlicerFactoryMock {
     }
 
     create () {
-        /* eslint-disable indent */
         const midiFileSlicer = {
-                  slice: stub()
-              };
-        /* eslint-enable indent */
+            slice: sinon.stub() // eslint-disable-line no-undef
+        };
 
         this._midiFileSlicers.push(midiFileSlicer);
 
