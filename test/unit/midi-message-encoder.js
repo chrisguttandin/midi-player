@@ -16,10 +16,10 @@ describe('MidiMessageEncoder', () => {
 
     describe('encode()', () => {
 
-        it('should encode a controller change message', () => {
+        it('should encode a control change message', () => {
             const sequence = midiMessageEncoder.encode({
                 channel: 3,
-                controllerChange: {
+                controlChange: {
                     type: 16,
                     value: 127
                 }

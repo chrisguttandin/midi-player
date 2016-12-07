@@ -46,7 +46,7 @@ export class MidiPlayer {
     }
 
     private static _isSendableEvent (event) {
-        return (('controllerChange' in event) ||
+        return (('controlChange' in event) ||
             ('noteOff' in event) ||
             ('noteOn' in event) ||
             ('programChange' in event));
