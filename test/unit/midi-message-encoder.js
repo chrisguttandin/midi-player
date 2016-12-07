@@ -25,7 +25,7 @@ describe('MidiMessageEncoder', () => {
                 }
             });
 
-            expect(sequence).to.deep.equal([ 0xB3, 0x10, 0x7F ]);
+            expect(sequence).to.deep.equal(new Uint8Array([ 0xB3, 0x10, 0x7F ]));
         });
 
         it('should encode a note off message', () => {
@@ -37,7 +37,7 @@ describe('MidiMessageEncoder', () => {
                 }
             });
 
-            expect(sequence).to.deep.equal([ 0x83, 0x47, 0x7F ]);
+            expect(sequence).to.deep.equal(new Uint8Array([ 0x83, 0x47, 0x7F ]));
         });
 
         it('should encode a note on message', () => {
@@ -49,7 +49,7 @@ describe('MidiMessageEncoder', () => {
                 }
             });
 
-            expect(sequence).to.deep.equal([ 0x93, 0x47, 0x7F ]);
+            expect(sequence).to.deep.equal(new Uint8Array([ 0x93, 0x47, 0x7F ]));
         });
 
         it('should encode a program change message', () => {
@@ -60,7 +60,7 @@ describe('MidiMessageEncoder', () => {
                 }
             });
 
-            expect(sequence).to.deep.equal([ 0xC3, 0x31 ]);
+            expect(sequence).to.deep.equal(new Uint8Array([ 0xC3, 0x31 ]));
         });
 
     });
