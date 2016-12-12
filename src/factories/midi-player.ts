@@ -1,8 +1,8 @@
+import { Inject, Injectable } from '@angular/core';
 import { MidiFileSlicerFactory } from '../factories/midi-file-slicer';
 import { MidiMessageEncoder } from '../midi-message-encoder';
 import { performance } from '../providers/performance';
 import { Scheduler } from '../scheduler';
-import { Inject, Injectable } from '@angular/core';
 
 export class MidiPlayer {
 
@@ -115,7 +115,7 @@ export class MidiPlayerFactory {
         @Inject(MidiFileSlicerFactory) midiFileSlicerFactory,
         @Inject(MidiMessageEncoder) midiMessageEncoder,
         @Inject(Scheduler) scheduler,
-        @Inject(performance) performance,
+        @Inject(performance) performance
     ) {
         this._options = { midiFileSlicerFactory, midiMessageEncoder, performance, scheduler };
     }
