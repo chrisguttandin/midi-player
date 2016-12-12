@@ -1,7 +1,7 @@
-import { performance } from './providers/performance';
-import { workerTimers } from './providers/worker-timers';
 import { Inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { performance } from './providers/performance';
+import { workerTimers } from './providers/worker-timers';
 
 const INTERVAL = 500;
 
