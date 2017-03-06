@@ -14,6 +14,7 @@
   },
   "description": "A simple midi player. It sends midi messages to connected devices.",
   "devDependencies": {
+    "@angular/compiler": "^2.4.0",
     "babel-preset-es2015": "^6.18.0",
     "chai": "^3.5.0",
     "eslint-config-holy-grail": "^16.0.0",
@@ -42,7 +43,7 @@
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "ts-loader": "^2.0.0",
-    "tslint-config-holy-grail": "^6.0.1",
+    "tslint-config-holy-grail": "^7.0.0",
     "typescript": "^2.1.4",
     "webpack": "^2.2.0",
     "worker-timers-mock": "2.0.0"
