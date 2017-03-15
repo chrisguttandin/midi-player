@@ -1,7 +1,9 @@
+import { spy, stub } from 'sinon';
+
 export class MidiFileSlicerFactoryMock {
 
     constructor () {
-        this.create = sinon.spy(this.create); // eslint-disable-line no-undef
+        this.create = spy(this.create);
         this._midiFileSlicers = [];
     }
 
@@ -11,7 +13,7 @@ export class MidiFileSlicerFactoryMock {
 
     create () {
         const midiFileSlicer = {
-            slice: sinon.stub() // eslint-disable-line no-undef
+            slice: stub()
         };
 
         this._midiFileSlicers.push(midiFileSlicer);
