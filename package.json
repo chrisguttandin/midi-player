@@ -4,7 +4,7 @@
     "url": "https://github.com/chrisguttandin/midi-player/issues"
   },
   "dependencies": {
-    "@angular/core": "^2.4.0",
+    "@angular/core": "^4.0.0",
     "core-js": "^2.4.1",
     "json-midi-message-encoder": "0.0.3",
     "midi-file-slicer": "^2.0.0",
