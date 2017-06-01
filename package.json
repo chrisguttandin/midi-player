@@ -43,7 +43,7 @@
     "sinon-chai": "^2.8.0",
     "ts-loader": "^2.0.0",
     "tslint-config-holy-grail": "^9.0.0",
-    "typescript": "^2.1.4",
+    "typescript": "^2.3.4",
     "webpack": "^2.2.0",
     "worker-timers-mock": "^2.0.0"
   },
