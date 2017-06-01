@@ -41,17 +41,6 @@ export class MidiPlayer {
         this._schedulerSubscription = null;
     }
 
-    private static _isEndOfTrack (event) {
-        return ('endOfTrack' in event);
-    }
-
-    private static _isSendableEvent (event) {
-        return (('controlChange' in event) ||
-            ('noteOff' in event) ||
-            ('noteOn' in event) ||
-            ('programChange' in event));
-    }
-
     public play () {
         if (this._schedulerSubscription !== null || this._endedTracks !== null) {
             throw new Error('The player is currently playing.');
@@ -102,6 +91,17 @@ export class MidiPlayer {
 
             this._resolve = null;
         }
+    }
+
+    private static _isEndOfTrack (event) {
+        return ('endOfTrack' in event);
+    }
+
+    private static _isSendableEvent (event) {
+        return (('controlChange' in event) ||
+            ('noteOff' in event) ||
+            ('noteOn' in event) ||
+            ('programChange' in event));
     }
 
 }
