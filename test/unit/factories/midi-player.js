@@ -14,11 +14,8 @@ import { stub } from 'sinon';
 describe('MidiPlayer', () => {
 
     let midiFileSlicerFactory;
-
     let midiMessageEncoder;
-
     let midiPlayer;
-
     let midiPlayerFactory;
 
     beforeEach(() => {
@@ -52,11 +49,8 @@ describe('MidiPlayer', () => {
     describe('play()', () => {
 
         let json;
-
         let midiFileSlicer;
-
         let midiOutput;
-
         let sequence;
 
         beforeEach(() => {
