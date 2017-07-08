@@ -28,7 +28,7 @@ export class MidiPlayer {
 
     private _schedulerSubscription;
 
-    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance, scheduler }) {
+    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance: prfrmnc, scheduler }) {
         this._currentTime = 0;
         this._endedTracks = null;
         this._json = json;
@@ -36,7 +36,7 @@ export class MidiPlayer {
         this._midiMessageEncoder = midiMessageEncoder;
         this._midiOutput = midiOutput;
         this._offset = null;
-        this._performance = performance;
+        this._performance = prfrmnc;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
     }
@@ -115,9 +115,9 @@ export class MidiPlayerFactory {
         @Inject(MidiFileSlicerFactory) midiFileSlicerFactory,
         @Inject(MidiMessageEncoder) midiMessageEncoder,
         @Inject(Scheduler) scheduler,
-        @Inject(performance) performance
+        @Inject(performance) prfrmnc
     ) {
-        this._options = { midiFileSlicerFactory, midiMessageEncoder, performance, scheduler };
+        this._options = { midiFileSlicerFactory, midiMessageEncoder, performance: prfrmnc, scheduler };
     }
 
     public create (options) {
