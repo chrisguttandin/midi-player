@@ -79,12 +79,12 @@ describe('MidiPlayer', () => {
 
         it('should schedule all events up to the lookahead', () => {
             const event = {
-                noteOn: 'a fake note on event',
-                time: 500
+                noteOn: 'a fake note on event'
             };
+            const time = 500;
 
             midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
-            midiFileSlicer.slice.returns([ event ]);
+            midiFileSlicer.slice.returns([ { event, time } ]);
 
             midiPlayer.play();
 
@@ -104,7 +104,7 @@ describe('MidiPlayer', () => {
 
         it('should resolve the promise after playing the track', (done) => {
             midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
-            midiFileSlicer.slice.returns([ { delta: 0, endOfTrack: true } ]);
+            midiFileSlicer.slice.returns([ { event: { delta: 0, endOfTrack: true } } ]);
 
             midiPlayer
                 .play()

@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
+import { MidiFileSlicer } from 'midi-file-slicer';
+import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
 import { MidiFileSlicerFactory } from '../factories/midi-file-slicer';
+import { IMidiOutput, IMidiPlayerFactoryOptions, IMidiPlayerOptions } from '../interfaces';
 import { MidiMessageEncoder } from '../midi-message-encoder';
 import { performance } from '../providers/performance';
 import { Scheduler } from '../scheduler';
@@ -8,27 +11,27 @@ export class MidiPlayer {
 
     private _currentTime: number;
 
-    private _endedTracks: number;
+    private _endedTracks: null | number;
 
-    private _json;
+    private _json: IMidiFile;
 
-    private _midiFileSlicer;
+    private _midiFileSlicer: MidiFileSlicer;
 
-    private _midiMessageEncoder;
+    private _midiMessageEncoder: MidiMessageEncoder;
 
-    private _midiOutput;
+    private _midiOutput: IMidiOutput;
 
-    private _offset: number;
+    private _offset: null | number;
 
-    private _performance;
+    private _performance: Performance;
 
-    private _resolve;
+    private _resolve: null | (() => void);
 
-    private _scheduler;
+    private _scheduler: Scheduler;
 
-    private _schedulerSubscription;
+    private _schedulerSubscription: null | { unsubscribe (): void };
 
-    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance: prfrmnc, scheduler }) {
+    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance: prfrmnc, scheduler }: IMidiPlayerOptions) {
         this._currentTime = 0;
         this._endedTracks = null;
         this._json = json;
@@ -52,6 +55,7 @@ export class MidiPlayer {
             this._resolve = resolve;
             this._schedulerSubscription = this._scheduler
                 .subscribe({
+                    complete: () => {}, // tslint:disable-line:no-empty
                     error: (err) => reject(err),
                     next: ({ end, start }) => {
                         if (this._offset === null) {
@@ -68,14 +72,18 @@ export class MidiPlayer {
         });
     }
 
-    private _schedule (start, end) {
+    private _schedule (start: number, end: number) {
+        if (this._endedTracks === null || this._offset === null || this._resolve === null) {
+            throw new Error(); // @todo
+        }
+
         const events = this._midiFileSlicer.slice(start - this._offset, end - this._offset);
 
         events
-            .filter((event) => MidiPlayer._isSendableEvent(event))
-            .forEach((event) => this._midiOutput.send(this._midiMessageEncoder.encode(event), start + event.time));
+            .filter(({ event }) => MidiPlayer._isSendableEvent(event))
+            .forEach(({ event, time }) => this._midiOutput.send(this._midiMessageEncoder.encode(event), start + time));
 
-        const endedTracks = events.filter(MidiPlayer._isEndOfTrack).length;
+        const endedTracks = events.filter(() => MidiPlayer._isEndOfTrack).length;
 
         this._endedTracks += endedTracks;
 
@@ -93,11 +101,11 @@ export class MidiPlayer {
         }
     }
 
-    private static _isEndOfTrack (event) {
+    private static _isEndOfTrack (event: TMidiEvent) {
         return ('endOfTrack' in event);
     }
 
-    private static _isSendableEvent (event) {
+    private static _isSendableEvent (event: TMidiEvent) {
         return (('controlChange' in event) ||
             ('noteOff' in event) ||
             ('noteOn' in event) ||
@@ -109,19 +117,29 @@ export class MidiPlayer {
 @Injectable()
 export class MidiPlayerFactory {
 
-    private _options;
+    private _options: {
+
+        midiFileSlicerFactory: MidiFileSlicerFactory;
+
+        midiMessageEncoder: MidiMessageEncoder;
+
+        performance: Performance;
+
+        scheduler: Scheduler;
+
+    };
 
     constructor (
-        @Inject(MidiFileSlicerFactory) midiFileSlicerFactory,
-        @Inject(MidiMessageEncoder) midiMessageEncoder,
-        @Inject(Scheduler) scheduler,
-        @Inject(performance) prfrmnc
+        @Inject(MidiFileSlicerFactory) midiFileSlicerFactory: MidiFileSlicerFactory,
+        @Inject(MidiMessageEncoder) midiMessageEncoder: MidiMessageEncoder,
+        @Inject(performance) prfrmnc: Performance,
+        @Inject(Scheduler) scheduler: Scheduler
     ) {
         this._options = { midiFileSlicerFactory, midiMessageEncoder, performance: prfrmnc, scheduler };
     }
 
-    public create (options) {
-        return new MidiPlayer(Object.assign({}, this._options, options));
+    public create (options: IMidiPlayerFactoryOptions) {
+        return new MidiPlayer({ ...this._options, ...options });
     }
 
 }
