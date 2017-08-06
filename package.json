@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@angular/core": "^4.3.3",
-    "core-js": "^2.4.1",
+    "core-js": "^2.5.0",
     "json-midi-message-encoder": "^1.0.4",
     "midi-file-slicer": "^4.0.1",
     "midi-json-parser-worker": "^2.1.1",
