@@ -2,6 +2,6 @@
 
 export interface IMidiOutput {
 
-    send(data: number[] | Uint8Array, timestamp?: number): void;
+    send (data: number[] | Uint8Array, timestamp?: number): void;
 
 }
