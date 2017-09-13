@@ -4,7 +4,7 @@ import { Observer } from 'rxjs/Observer';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/merge';
-import { IInterval } from './interfaces';
+import { IInterval } from './interfaces';
 import { performance } from './providers/performance';
 import { TWorkerTimers, workerTimers } from './providers/worker-timers';
 

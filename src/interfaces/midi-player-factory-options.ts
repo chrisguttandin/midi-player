@@ -1,5 +1,5 @@
 import { IMidiFile } from 'midi-json-parser-worker';
-import { IMidiOutput } from './midi-output';
+import { IMidiOutput } from './midi-output';
 
 export interface IMidiPlayerFactoryOptions {
 
