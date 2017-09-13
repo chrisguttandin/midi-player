@@ -9,7 +9,7 @@ import { Scheduler } from '../../../src/scheduler';
 import { WORKER_TIMERS_PROVIDER } from '../../../src/providers/worker-timers';
 import { performance } from '../../../src/providers/performance';
 import { performanceMock } from '../../mock/performance';
-import { stub } from 'sinon';
+import { stub } from 'sinon';
 
 describe('MidiPlayer', () => {
 

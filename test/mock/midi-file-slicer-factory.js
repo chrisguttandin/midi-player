@@ -1,4 +1,4 @@
-import { spy, stub } from 'sinon';
+import { spy, stub } from 'sinon';
 
 export class MidiFileSlicerFactoryMock {
 
