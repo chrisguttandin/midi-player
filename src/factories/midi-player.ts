@@ -11,7 +11,7 @@ export class MidiPlayer {
 
     private _currentTime: number;
 
-    private _endedTracks: null | number;
+    private _endedTracks: null | number;
 
     private _json: IMidiFile;
 
@@ -21,7 +21,7 @@ export class MidiPlayer {
 
     private _midiOutput: IMidiOutput;
 
-    private _offset: null | number;
+    private _offset: null | number;
 
     private _performance: Performance;
 
@@ -29,7 +29,7 @@ export class MidiPlayer {
 
     private _scheduler: Scheduler;
 
-    private _schedulerSubscription: null | { unsubscribe (): void };
+    private _schedulerSubscription: null | { unsubscribe (): void };
 
     constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance: prfrmnc, scheduler }: IMidiPlayerOptions) {
         this._currentTime = 0;
