@@ -13,7 +13,7 @@
     "rxjs": "^5.4.3",
     "tslib": "^1.7.1",
     "worker-timers": "^4.0.15",
-    "zone.js": "^0.8.17"
+    "zone.js": "^0.8.18"
   },
   "description": "A simple midi player. It sends midi messages to connected devices.",
   "devDependencies": {
