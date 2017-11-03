@@ -9,8 +9,6 @@ export interface IMidiPlayerOptions extends IMidiPlayerFactoryOptions {
 
     midiMessageEncoder: MidiMessageEncoder;
 
-    performance: Performance;
-
     scheduler: Scheduler;
 
 }

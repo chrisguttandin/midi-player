@@ -4,12 +4,9 @@ import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
 import { MidiFileSlicerFactory } from '../factories/midi-file-slicer';
 import { IMidiOutput, IMidiPlayerFactoryOptions, IMidiPlayerOptions } from '../interfaces';
 import { MidiMessageEncoder } from '../midi-message-encoder';
-import { performance } from '../providers/performance';
 import { Scheduler } from '../scheduler';
 
 export class MidiPlayer {
-
-    private _currentTime: number;
 
     private _endedTracks: null | number;
 
@@ -23,23 +20,19 @@ export class MidiPlayer {
 
     private _offset: null | number;
 
-    private _performance: Performance;
-
     private _resolve: null | (() => void);
 
     private _scheduler: Scheduler;
 
     private _schedulerSubscription: null | { unsubscribe (): void };
 
-    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, performance: prfrmnc, scheduler }: IMidiPlayerOptions) {
-        this._currentTime = 0;
+    constructor ({ json, midiFileSlicerFactory, midiMessageEncoder, midiOutput, scheduler }: IMidiPlayerOptions) {
         this._endedTracks = null;
         this._json = json;
         this._midiFileSlicer = midiFileSlicerFactory.create({ json });
         this._midiMessageEncoder = midiMessageEncoder;
         this._midiOutput = midiOutput;
         this._offset = null;
-        this._performance = prfrmnc;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
     }
@@ -123,8 +116,6 @@ export class MidiPlayerFactory {
 
         midiMessageEncoder: MidiMessageEncoder;
 
-        performance: Performance;
-
         scheduler: Scheduler;
 
     };
@@ -132,10 +123,9 @@ export class MidiPlayerFactory {
     constructor (
         @Inject(MidiFileSlicerFactory) midiFileSlicerFactory: MidiFileSlicerFactory,
         @Inject(MidiMessageEncoder) midiMessageEncoder: MidiMessageEncoder,
-        @Inject(performance) prfrmnc: Performance,
         @Inject(Scheduler) scheduler: Scheduler
     ) {
-        this._options = { midiFileSlicerFactory, midiMessageEncoder, performance: prfrmnc, scheduler };
+        this._options = { midiFileSlicerFactory, midiMessageEncoder, scheduler };
     }
 
     public create (options: IMidiPlayerFactoryOptions) {
