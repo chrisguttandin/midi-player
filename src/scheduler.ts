@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import { Observer } from 'rxjs/Observer';
+import { merge } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/merge';
 import { IInterval } from './interfaces';
 import { performance } from './providers/performance';
 import { TWorkerTimers, workerTimers } from './providers/worker-timers';
@@ -59,9 +58,10 @@ export class Scheduler {
             this._start(currentTime);
         }
 
-        const subscription = Observable
-            .of({ end: this._nextTick + INTERVAL, start: currentTime })
-            .merge(this._subject)
+        const subscription = of({ end: this._nextTick + INTERVAL, start: currentTime })
+            .pipe(
+                merge(this._subject)
+            )
             .subscribe(observer);
 
         const unsubscribe = () => {

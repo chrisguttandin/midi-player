@@ -1,5 +1,5 @@
-import 'core-js/es7/reflect'; // tslint:disable-line:ordered-imports
 import { ReflectiveInjector } from '@angular/core';
+import 'core-js/es7/reflect'; // tslint:disable-line:ordered-imports
 import { MidiFileSlicerFactory } from './factories/midi-file-slicer';
 import { MidiPlayerFactory } from './factories/midi-player';
 import { MidiMessageEncoder } from './midi-message-encoder';
