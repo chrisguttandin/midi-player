@@ -29,26 +29,6 @@ export class Scheduler {
         this._subject = new Subject();
     }
 
-    private _start (currentTime: number) {
-        this._nextTick = currentTime + INTERVAL;
-
-        this._intervalId = this._workerTimers.setInterval(() => {
-            if (this._performance.now() >= this._nextTick) {
-                this._nextTick += INTERVAL;
-
-                this._subject.next({ end: this._nextTick + INTERVAL, start: this._nextTick });
-            }
-        }, INTERVAL / 10);
-    }
-
-    private _stop () {
-        if (this._intervalId !== null) {
-            this._workerTimers.clearInterval(this._intervalId);
-        }
-
-        this._intervalId = null;
-    }
-
     public subscribe (observer: Observer<IInterval>) {
         this._numberOfSubscribers += 1;
 
@@ -75,6 +55,26 @@ export class Scheduler {
         };
 
         return { unsubscribe };
+    }
+
+    private _start (currentTime: number) {
+        this._nextTick = currentTime + INTERVAL;
+
+        this._intervalId = this._workerTimers.setInterval(() => {
+            if (this._performance.now() >= this._nextTick) {
+                this._nextTick += INTERVAL;
+
+                this._subject.next({ end: this._nextTick + INTERVAL, start: this._nextTick });
+            }
+        }, INTERVAL / 10);
+    }
+
+    private _stop () {
+        if (this._intervalId !== null) {
+            this._workerTimers.clearInterval(this._intervalId);
+        }
+
+        this._intervalId = null;
     }
 
 }
