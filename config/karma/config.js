@@ -69,7 +69,7 @@ module.exports = (config) => {
 
             browsers: [
                 'ChromeCanaryHeadless',
-                'FirefoxDeveloper'
+                'FirefoxDeveloperHeadless'
             ]
 
         });
