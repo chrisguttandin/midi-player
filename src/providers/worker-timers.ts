@@ -1,8 +1,14 @@
 import { InjectionToken } from '@angular/core';
 import * as wrkrTmrs from 'worker-timers';
 
-export type TWorkerTimers = typeof wrkrTmrs;
+export interface IWorkerTimers {
 
-export const workerTimers = new InjectionToken<TWorkerTimers>('WORKER_TIMERS');
+    clearInterval: typeof wrkrTmrs.clearInterval;
+
+    setInterval: typeof wrkrTmrs.setInterval;
+
+}
+
+export const workerTimers = new InjectionToken<IWorkerTimers>('WORKER_TIMERS');
 
 export const WORKER_TIMERS_PROVIDER = { provide: workerTimers, useValue: wrkrTmrs };

@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { of } from 'rxjs/observable/of';
 import { Observer } from 'rxjs/Observer';
 import { merge } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { IInterval } from './interfaces';
 import { performance } from './providers/performance';
-import { TWorkerTimers, workerTimers } from './providers/worker-timers';
+import { IWorkerTimers, workerTimers } from './providers/worker-timers';
 
 const INTERVAL = 500;
 
@@ -22,7 +22,7 @@ export class Scheduler {
 
     constructor (
         @Inject(performance) private _performance: Performance,
-        @Inject(workerTimers) private _workerTimers: TWorkerTimers
+        @Inject(workerTimers) private _workerTimers: IWorkerTimers
     ) {
         this._nextTick = 0;
         this._numberOfSubscribers = 0;
@@ -78,3 +78,5 @@ export class Scheduler {
     }
 
 }
+
+export const SCHEDULER_PROVIDER = { deps: [ performance, <InjectionToken<IWorkerTimers>> workerTimers ], provide: Scheduler };

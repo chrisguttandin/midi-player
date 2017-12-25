@@ -133,3 +133,5 @@ export class MidiPlayerFactory {
     }
 
 }
+
+export const MIDI_PLAYER_FACTORY_PROVIDER = { deps: [ MidiFileSlicerFactory, MidiMessageEncoder, Scheduler ], provide: MidiPlayerFactory };

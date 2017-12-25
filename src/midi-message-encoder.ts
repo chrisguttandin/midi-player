@@ -8,3 +8,5 @@ export class MidiMessageEncoder {
     }
 
 }
+
+export const MIDI_MESSAGE_ENCODER_PROVIDER = { deps: [ ], provide: MidiMessageEncoder };
