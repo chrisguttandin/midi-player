@@ -8,3 +8,5 @@ export class MidiFileSlicerFactory {
     }
 
 }
+
+export const MIDI_FILE_SLICER_FACTORY_PROVIDER = { deps: [], provide: MidiFileSlicerFactory };
