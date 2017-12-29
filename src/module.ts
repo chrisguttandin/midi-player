@@ -1,5 +1,4 @@
 import { Injector } from '@angular/core';
-import 'core-js/es7/reflect'; // tslint:disable-line:ordered-imports
 import { MIDI_FILE_SLICER_FACTORY_PROVIDER } from './factories/midi-file-slicer';
 import { MIDI_PLAYER_FACTORY_PROVIDER, MidiPlayerFactory } from './factories/midi-player';
 import { MIDI_MESSAGE_ENCODER_PROVIDER } from './midi-message-encoder';
