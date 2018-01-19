@@ -10,7 +10,7 @@
     "midi-file-slicer": "^4.0.18",
     "midi-json-parser-worker": "^4.0.5",
     "rxjs": "^5.5.6",
-    "tslib": "^1.8.1",
+    "tslib": "^1.9.0",
     "worker-timers": "^4.0.20",
     "zone.js": "^0.8.20"
   },
