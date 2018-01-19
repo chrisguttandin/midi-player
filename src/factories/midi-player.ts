@@ -76,7 +76,7 @@ export class MidiPlayer {
             .filter(({ event }) => MidiPlayer._isSendableEvent(event))
             .forEach(({ event, time }) => this._midiOutput.send(this._midiMessageEncoder.encode(event), start + time));
 
-        const endedTracks = events.filter(() => MidiPlayer._isEndOfTrack).length;
+        const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
 
         this._endedTracks += endedTracks;
 

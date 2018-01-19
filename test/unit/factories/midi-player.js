@@ -49,7 +49,6 @@ describe('MidiPlayer', () => {
     describe('play()', () => {
 
         let json;
-        let midiFileSlicer;
         let midiOutput;
         let sequence;
 
@@ -81,9 +80,9 @@ describe('MidiPlayer', () => {
             const event = {
                 noteOn: 'a fake note on event'
             };
+            const midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
             const time = 500;
 
-            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
             midiFileSlicer.slice.returns([ { event, time } ]);
 
             midiPlayer.play();
@@ -102,13 +101,12 @@ describe('MidiPlayer', () => {
             expect(midiPlayer.play()).to.be.a('promise');
         });
 
-        it('should resolve the promise after playing the track', (done) => {
-            midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
-            midiFileSlicer.slice.returns([ { event: { delta: 0, endOfTrack: true } } ]);
+        it('should resolve the promise after playing the track', () => {
+            const midiFileSlicer = midiFileSlicerFactory.midiFileSlicers[0];
 
-            midiPlayer
-                .play()
-                .then(() => done());
+            midiFileSlicer.slice.returns([ { event: { delta: 0, endOfTrack: true }, time: 0 } ]);
+
+            return midiPlayer.play();
         });
 
     });
