@@ -17,4 +17,4 @@ const injector = Injector.create({
     ]
 });
 
-export const midiPlayerFactory = injector.get(MidiPlayerFactory);
+export const midiPlayerFactory = injector.get<MidiPlayerFactory>(MidiPlayerFactory);
