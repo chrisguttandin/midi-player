@@ -1,15 +1,11 @@
-import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { of } from 'rxjs/observable/of';
 import { Observer } from 'rxjs/Observer';
 import { merge } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { IInterval } from './interfaces';
-import { performance } from './providers/performance';
-import { IWorkerTimers, workerTimers } from './providers/worker-timers';
 
 const INTERVAL = 500;
 
-@Injectable()
 export class Scheduler {
 
     private _intervalId: null | number;
@@ -21,8 +17,9 @@ export class Scheduler {
     private _subject: Subject<IInterval>;
 
     constructor (
-        @Inject(performance) private _performance: Performance,
-        @Inject(workerTimers) private _workerTimers: IWorkerTimers
+        private _clearInterval: Window['clearInterval'],
+        private _performance: Window['performance'],
+        private _setInterval: Window['setInterval']
     ) {
         this._nextTick = 0;
         this._numberOfSubscribers = 0;
@@ -60,7 +57,7 @@ export class Scheduler {
     private _start (currentTime: number) {
         this._nextTick = currentTime + INTERVAL;
 
-        this._intervalId = this._workerTimers.setInterval(() => {
+        this._intervalId = this._setInterval(() => {
             if (this._performance.now() >= this._nextTick) {
                 this._nextTick += INTERVAL;
 
@@ -71,12 +68,10 @@ export class Scheduler {
 
     private _stop () {
         if (this._intervalId !== null) {
-            this._workerTimers.clearInterval(this._intervalId);
+            this._clearInterval(this._intervalId);
         }
 
         this._intervalId = null;
     }
 
 }
-
-export const SCHEDULER_PROVIDER = { deps: [ performance, <InjectionToken<IWorkerTimers>> workerTimers ], provide: Scheduler };

@@ -1,20 +1,13 @@
-import { Injector } from '@angular/core';
-import { MIDI_FILE_SLICER_FACTORY_PROVIDER } from './factories/midi-file-slicer';
-import { MIDI_PLAYER_FACTORY_PROVIDER, MidiPlayerFactory } from './factories/midi-player';
-import { MIDI_MESSAGE_ENCODER_PROVIDER } from './midi-message-encoder';
-import { PERFORMANCE_PROVIDER } from './providers/performance';
-import { WORKER_TIMERS_PROVIDER } from './providers/worker-timers';
-import { SCHEDULER_PROVIDER } from './scheduler';
+import { clearInterval, setInterval } from 'worker-timers';
+import { createMidiFileSlicer } from './factories/midi-file-slicer';
+import { createMidiPlayerFactory } from './factories/midi-player-factory';
+import { IMidiPlayer, IMidiPlayerFactoryOptions } from './interfaces';
+import { Scheduler } from './scheduler';
 
-const injector = Injector.create({
-    providers: [
-        MIDI_FILE_SLICER_FACTORY_PROVIDER,
-        MIDI_MESSAGE_ENCODER_PROVIDER,
-        MIDI_PLAYER_FACTORY_PROVIDER,
-        PERFORMANCE_PROVIDER,
-        SCHEDULER_PROVIDER,
-        WORKER_TIMERS_PROVIDER
-    ]
-});
+export * from './interfaces';
 
-export const midiPlayerFactory = injector.get<MidiPlayerFactory>(MidiPlayerFactory);
+const scheduler = new Scheduler(clearInterval, performance, setInterval);
+
+const createMidiPlayer = createMidiPlayerFactory(createMidiFileSlicer, scheduler);
+
+export const create = (options: IMidiPlayerFactoryOptions): IMidiPlayer => createMidiPlayer(options);
