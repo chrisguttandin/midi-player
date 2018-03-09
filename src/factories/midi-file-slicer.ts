@@ -1,4 +1,4 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
-import { IMidiFile } from 'midi-json-parser-worker';
+import { TMidiFileSlicerFactory } from '../types';
 
-export const createMidiFileSlicer = (json: IMidiFile): MidiFileSlicer => new MidiFileSlicer({ json });
+export const createMidiFileSlicer: TMidiFileSlicerFactory = (json) => new MidiFileSlicer({ json });
