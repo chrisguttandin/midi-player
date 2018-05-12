@@ -1,7 +1,4 @@
-import { of } from 'rxjs/observable/of';
-import { Observer } from 'rxjs/Observer';
-import { merge } from 'rxjs/operators';
-import { Subject } from 'rxjs/Subject';
+import { Observer, Subject, merge, of } from 'rxjs';
 import { IInterval } from './interfaces';
 
 const INTERVAL = 500;
@@ -35,10 +32,7 @@ export class Scheduler {
             this._start(currentTime);
         }
 
-        const subscription = of({ end: this._nextTick + INTERVAL, start: currentTime })
-            .pipe(
-                merge(this._subject)
-            )
+        const subscription = merge(of({ end: this._nextTick + INTERVAL, start: currentTime }), this._subject)
             .subscribe(observer);
 
         const unsubscribe = () => {
