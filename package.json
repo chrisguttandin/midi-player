@@ -19,7 +19,7 @@
   },
   "description": "A simple midi player. It sends midi messages to connected devices.",
   "devDependencies": {
-    "@commitlint/cli": "^6.2.0",
+    "@commitlint/cli": "^7.0.0",
     "@commitlint/config-angular": "^6.1.3",
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
