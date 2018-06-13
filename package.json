@@ -13,7 +13,7 @@
     "json-midi-message-encoder": "^1.1.35",
     "midi-file-slicer": "^4.0.40",
     "midi-json-parser-worker": "^4.0.28",
-    "rxjs": "^6.2.0",
+    "rxjs": "^6.2.1",
     "tslib": "^1.9.2",
     "worker-timers": "^4.0.38"
   },
