@@ -30,6 +30,7 @@ export class MidiPlayer implements IMidiPlayer {
         this._midiFileSlicer = midiFileSlicer;
         this._midiOutput = midiOutput;
         this._offset = null;
+        this._resolve = null;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
     }

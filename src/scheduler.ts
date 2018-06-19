@@ -18,6 +18,7 @@ export class Scheduler {
         private _performance: Window['performance'],
         private _setInterval: Window['setInterval']
     ) {
+        this._intervalId = null;
         this._nextTick = 0;
         this._numberOfSubscribers = 0;
         this._subject = new Subject();
