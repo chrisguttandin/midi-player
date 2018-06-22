@@ -15,7 +15,7 @@
     "midi-json-parser-worker": "^4.0.34",
     "rxjs": "^6.2.1",
     "tslib": "^1.9.2",
-    "worker-timers": "^4.0.39"
+    "worker-timers": "^4.0.40"
   },
   "description": "A simple midi player. It sends midi messages to connected devices.",
   "devDependencies": {
