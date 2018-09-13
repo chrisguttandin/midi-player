@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "json-midi-message-encoder": "^1.1.49",
-    "midi-file-slicer": "^4.0.53",
+    "midi-file-slicer": "^4.0.54",
     "midi-json-parser-worker": "^4.0.41",
     "rxjs": "^6.3.2",
     "tslib": "^1.9.3",
