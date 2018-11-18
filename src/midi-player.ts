@@ -63,7 +63,7 @@ export class MidiPlayer implements IMidiPlayer {
         });
     }
 
-    private _schedule (start: number, end: number) {
+    private _schedule (start: number, end: number): void {
         if (this._endedTracks === null || this._offset === null || this._resolve === null) {
             throw new Error(); // @todo
         }
@@ -92,11 +92,11 @@ export class MidiPlayer implements IMidiPlayer {
         }
     }
 
-    private static _isEndOfTrack (event: TMidiEvent) {
+    private static _isEndOfTrack (event: TMidiEvent): boolean {
         return ('endOfTrack' in event);
     }
 
-    private static _isSendableEvent (event: TMidiEvent) {
+    private static _isSendableEvent (event: TMidiEvent): boolean {
         return (('controlChange' in event) ||
             ('noteOff' in event) ||
             ('noteOn' in event) ||

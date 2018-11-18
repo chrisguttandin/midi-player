@@ -24,7 +24,7 @@ export class Scheduler {
         this._subject = new Subject();
     }
 
-    public subscribe (observer: Observer<IInterval>) {
+    public subscribe (observer: Observer<IInterval>): { unsubscribe (): void } {
         this._numberOfSubscribers += 1;
 
         const currentTime = this._performance.now();
@@ -49,7 +49,7 @@ export class Scheduler {
         return { unsubscribe };
     }
 
-    private _start (currentTime: number) {
+    private _start (currentTime: number): void {
         this._nextTick = currentTime + INTERVAL;
 
         this._intervalId = this._setInterval(() => {
@@ -61,7 +61,7 @@ export class Scheduler {
         }, INTERVAL / 10);
     }
 
-    private _stop () {
+    private _stop (): void {
         if (this._intervalId !== null) {
             this._clearInterval(this._intervalId);
         }
