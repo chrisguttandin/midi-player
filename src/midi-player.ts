@@ -46,7 +46,7 @@ export class MidiPlayer implements IMidiPlayer {
             this._resolve = resolve;
             this._schedulerSubscription = this._scheduler
                 .subscribe({
-                    complete: () => {}, // tslint:disable-line:no-empty
+                    complete: () => { }, // tslint:disable-line:no-empty
                     error: (err) => reject(err),
                     next: ({ end, start }) => {
                         if (this._offset === null) {
