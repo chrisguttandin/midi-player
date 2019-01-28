@@ -71,7 +71,8 @@
     }
   },
   "keywords": [
-    "MIDI"
+    "MIDI",
+    "Web MIDI API"
   ],
   "license": "MIT",
   "main": "build/es5/bundle.js",
