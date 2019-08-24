@@ -1,5 +1,5 @@
 export interface IMidiPlayer {
 
-    play (): Promise<void>;
+    play (): Promise<void>; // tslint:disable-line:invalid-void
 
 }
