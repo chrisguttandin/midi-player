@@ -35,7 +35,7 @@ export class MidiPlayer implements IMidiPlayer {
         this._schedulerSubscription = null;
     }
 
-    public play (): Promise<void> { // tslint:disable-line:invalid-void
+    public play (): Promise<void> {
         if (this._schedulerSubscription !== null || this._endedTracks !== null) {
             throw new Error('The player is currently playing.');
         }
