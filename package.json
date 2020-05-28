@@ -12,7 +12,7 @@
     "@babel/runtime": "^7.10.1",
     "json-midi-message-encoder": "^4.0.2",
     "midi-file-slicer": "^6.0.12",
-    "midi-json-parser-worker": "^8.0.1",
+    "midi-json-parser-worker": "^8.0.2",
     "rxjs": "^6.5.5",
     "tslib": "^2.0.0",
     "worker-timers": "^6.0.12"
