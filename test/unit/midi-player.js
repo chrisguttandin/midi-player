@@ -7,7 +7,6 @@ import { performanceMock } from '../mock/performance';
 import { stub } from 'sinon';
 
 describe('MidiPlayer', () => {
-
     let encodeMidiMessage;
     let json;
     let midiPlayer;
@@ -18,9 +17,7 @@ describe('MidiPlayer', () => {
         encodeMidiMessage = stub();
 
         json = {
-            tracks: [
-                'a fake track'
-            ]
+            tracks: ['a fake track']
         };
 
         scheduler = new Scheduler(clearInterval, performanceMock, setInterval);
@@ -46,14 +43,13 @@ describe('MidiPlayer', () => {
     });
 
     describe('play()', () => {
-
         it('should schedule all events up to the lookahead', () => {
             const event = {
                 noteOn: 'a fake note on event'
             };
             const time = 500;
 
-            midiFileSlicerMock.slice.returns([ { event, time } ]);
+            midiFileSlicerMock.slice.returns([{ event, time }]);
 
             midiPlayer.play();
 
@@ -72,11 +68,9 @@ describe('MidiPlayer', () => {
         });
 
         it('should resolve the promise after playing the track', () => {
-            midiFileSlicerMock.slice.returns([ { event: { delta: 0, endOfTrack: true }, time: 0 } ]);
+            midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
             return midiPlayer.play();
         });
-
     });
-
 });

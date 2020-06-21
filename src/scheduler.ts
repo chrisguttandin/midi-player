@@ -4,7 +4,6 @@ import { IInterval } from './interfaces';
 const INTERVAL = 500;
 
 export class Scheduler {
-
     private _intervalId: null | number;
 
     private _nextTick: number;
@@ -13,7 +12,7 @@ export class Scheduler {
 
     private _subject: Subject<IInterval>;
 
-    constructor (
+    constructor(
         private _clearInterval: Window['clearInterval'],
         private _performance: Window['performance'],
         private _setInterval: Window['setInterval']
@@ -24,7 +23,7 @@ export class Scheduler {
         this._subject = new Subject();
     }
 
-    public subscribe (observer: Observer<IInterval>): { unsubscribe (): void } {
+    public subscribe(observer: Observer<IInterval>): { unsubscribe(): void } {
         this._numberOfSubscribers += 1;
 
         const currentTime = this._performance.now();
@@ -33,8 +32,7 @@ export class Scheduler {
             this._start(currentTime);
         }
 
-        const subscription = merge(of({ end: this._nextTick + INTERVAL, start: currentTime }), this._subject)
-            .subscribe(observer);
+        const subscription = merge(of({ end: this._nextTick + INTERVAL, start: currentTime }), this._subject).subscribe(observer);
 
         const unsubscribe = () => {
             this._numberOfSubscribers -= 1;
@@ -49,7 +47,7 @@ export class Scheduler {
         return { unsubscribe };
     }
 
-    private _start (currentTime: number): void {
+    private _start(currentTime: number): void {
         this._nextTick = currentTime + INTERVAL;
 
         this._intervalId = this._setInterval(() => {
@@ -61,12 +59,11 @@ export class Scheduler {
         }, INTERVAL / 10);
     }
 
-    private _stop (): void {
+    private _stop(): void {
         if (this._intervalId !== null) {
             this._clearInterval(this._intervalId);
         }
 
         this._intervalId = null;
     }
-
 }

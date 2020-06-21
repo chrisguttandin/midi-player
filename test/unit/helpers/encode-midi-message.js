@@ -1,7 +1,6 @@
 import { encodeMidiMessage } from '../../../src/helpers/encode-midi-message';
 
 describe('encodeMidiMessage()', () => {
-
     it('should encode a control change message', () => {
         const sequence = encodeMidiMessage({
             channel: 3,
@@ -11,7 +10,7 @@ describe('encodeMidiMessage()', () => {
             }
         });
 
-        expect(sequence).to.deep.equal(new Uint8Array([ 0xB3, 0x10, 0x7F ]));
+        expect(sequence).to.deep.equal(new Uint8Array([0xb3, 0x10, 0x7f]));
     });
 
     it('should encode a note off message', () => {
@@ -23,7 +22,7 @@ describe('encodeMidiMessage()', () => {
             }
         });
 
-        expect(sequence).to.deep.equal(new Uint8Array([ 0x83, 0x47, 0x7F ]));
+        expect(sequence).to.deep.equal(new Uint8Array([0x83, 0x47, 0x7f]));
     });
 
     it('should encode a note on message', () => {
@@ -35,7 +34,7 @@ describe('encodeMidiMessage()', () => {
             }
         });
 
-        expect(sequence).to.deep.equal(new Uint8Array([ 0x93, 0x47, 0x7F ]));
+        expect(sequence).to.deep.equal(new Uint8Array([0x93, 0x47, 0x7f]));
     });
 
     it('should encode a program change message', () => {
@@ -46,7 +45,6 @@ describe('encodeMidiMessage()', () => {
             }
         });
 
-        expect(sequence).to.deep.equal(new Uint8Array([ 0xC3, 0x31 ]));
+        expect(sequence).to.deep.equal(new Uint8Array([0xc3, 0x31]));
     });
-
 });

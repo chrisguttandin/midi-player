@@ -2,7 +2,6 @@ import { createMidiPlayerFactory } from '../../../src/factories/midi-player-fact
 import { spy } from 'sinon';
 
 describe('createMidiPlayerFactory()', () => {
-
     let midiFileSlicerFactory;
     let midiPlayerFactory;
 
@@ -19,7 +18,6 @@ describe('createMidiPlayerFactory()', () => {
     });
 
     describe('midiPlayerFactory()', () => {
-
         it('should create a new midiFileSlicer', () => {
             const json = 'a fake midi representation';
 
@@ -28,7 +26,5 @@ describe('createMidiPlayerFactory()', () => {
             expect(midiFileSlicerFactory).to.have.been.calledOnce;
             expect(midiFileSlicerFactory).to.have.been.calledWithExactly(json);
         });
-
     });
-
 });

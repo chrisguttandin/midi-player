@@ -1,5 +1,3 @@
 export interface IMidiPlayer {
-
-    play (): Promise<void>;
-
+    play(): Promise<void>;
 }
