@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@babel/runtime": "^7.11.2",
-        "json-midi-message-encoder": "^4.0.7",
+        "json-midi-message-encoder": "^4.0.8",
         "midi-file-slicer": "^6.0.17",
         "midi-json-parser-worker": "^8.0.7",
         "rxjs": "^6.6.2",
