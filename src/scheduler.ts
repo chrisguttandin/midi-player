@@ -32,6 +32,7 @@ export class Scheduler {
             this._start(currentTime);
         }
 
+        // tslint:disable-next-line:deprecation
         const subscription = merge(of({ end: this._nextTick + INTERVAL, start: currentTime }), this._subject).subscribe(observer);
 
         const unsubscribe = () => {
