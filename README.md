@@ -2,7 +2,7 @@
 
 **A simple MIDI player which sends MIDI messages to connected devices.**
 
-[![dependencies](https://img.shields.io/david/chrisguttandin/midi-player.svg?style=flat-square)](https://www.npmjs.com/package/midi-player)
+[![dependencies](https://img.shields.io/david/chrisguttandin/midi-player.svg?style=flat-square)](https://github.com/chrisguttandin/midi-player/network/dependencies)
 [![version](https://img.shields.io/npm/v/midi-player.svg?style=flat-square)](https://www.npmjs.com/package/midi-player)
 
 This module provides a player which sends MIDI messages to connected devices. It schedules the messages with a look ahead of about 500 milliseconds. It does not directly rely on the [Web MIDI API](https://webaudio.github.io/web-midi-api/) but expects a [MIDIOutput](https://webaudio.github.io/web-midi-api/#midioutput-interface) to be passed as constructor argument. But theoretically that could be anything which implements the same interface.
