@@ -63,12 +63,6 @@
         "src/"
     ],
     "homepage": "https://github.com/chrisguttandin/midi-player",
-    "husky": {
-        "hooks": {
-            "commit-msg": "commitlint --edit --extends @commitlint/config-angular",
-            "pre-commit": "pretty-quick --config config/prettier/config.json --staged && grunt lint"
-        }
-    },
     "keywords": [
         "MIDI",
         "Web MIDI API"
@@ -82,6 +76,7 @@
         "url": "https://github.com/chrisguttandin/midi-player.git"
     },
     "scripts": {
+        "prepare": "husky install",
         "prepublishOnly": "grunt build",
         "test": "grunt lint && grunt test"
     },
