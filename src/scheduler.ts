@@ -23,7 +23,7 @@ export class Scheduler {
         this._subject = new Subject();
     }
 
-    public subscribe(observer: Observer<IInterval>): { unsubscribe(): void } {
+    public subscribe(observer: Partial<Observer<IInterval>>): { unsubscribe(): void } {
         this._numberOfSubscribers += 1;
 
         const currentTime = this._performance.now();
