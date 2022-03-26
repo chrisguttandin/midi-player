@@ -60,6 +60,30 @@ export class MidiPlayer implements IMidiPlayer {
         });
     }
 
+    public pause(): void {
+        if (this._resolve !== null) {
+            this._resolve();
+            this._resolve = null;
+        }
+        if (this._schedulerSubscription !== null) {
+            this._schedulerSubscription?.unsubscribe();
+            this._schedulerSubscription = null;
+        }
+    }
+
+    public resume(): void {}
+
+    public stop(): void {
+        this.pause();
+
+        this._offset = null;
+        this._endedTracks = null;
+    }
+
+    public get playing(): boolean {
+        return this._schedulerSubscription !== null && this._resolve !== null;
+    }
+
     private _schedule(start: number, end: number): void {
         if (this._endedTracks === null || this._offset === null || this._resolve === null) {
             throw new Error(); // @todo
