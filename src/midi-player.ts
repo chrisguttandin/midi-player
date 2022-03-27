@@ -1,6 +1,7 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
 import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions } from './interfaces';
+import { PlayerState } from './types/player-state';
 import { Scheduler } from './scheduler';
 
 export class MidiPlayer implements IMidiPlayer {
@@ -16,11 +17,15 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _offset: null | number;
 
+    private _paused: null | number;
+
     private _resolve: null | (() => void);
 
     private _scheduler: Scheduler;
 
     private _schedulerSubscription: null | { unsubscribe(): void };
+
+    private _performance: Window['performance'];
 
     constructor({ encodeMidiMessage, json, midiFileSlicer, midiOutput, scheduler }: IMidiPlayerOptions) {
         this._encodeMidiMessage = encodeMidiMessage;
@@ -29,18 +34,75 @@ export class MidiPlayer implements IMidiPlayer {
         this._midiFileSlicer = midiFileSlicer;
         this._midiOutput = midiOutput;
         this._offset = null;
+        this._paused = null;
         this._resolve = null;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
+        this._performance = performance;
     }
 
     public play(): Promise<void> {
-        if (this._schedulerSubscription !== null || this._endedTracks !== null) {
+        if (this.state === PlayerState.Playing) {
             throw new Error('The player is currently playing.');
         }
 
         this._endedTracks = 0;
 
+        return this._promise();
+    }
+
+    public pause(): void {
+        if (this.state !== PlayerState.Playing) {
+            throw new Error('The player is not currently playing.');
+        }
+
+        this._pause();
+
+        this._paused = this._performance.now();
+    }
+
+    public resume(): Promise<void> {
+        if (this.state !== PlayerState.Paused) {
+            throw new Error('The player is not currently paused.');
+        }
+
+        this._offset! += this._performance.now() - this._paused!;
+
+        return this._promise();
+    }
+
+    public stop(): void {
+        this._pause();
+
+        this._offset = null;
+
+        this._endedTracks = null;
+    }
+
+    public get state(): PlayerState {
+        if (this._schedulerSubscription === null && this._resolve === null) {
+            return this._endedTracks === null ? PlayerState.Stopped : PlayerState.Paused;
+        }
+        return PlayerState.Playing;
+    }
+
+    private _pause(): void {
+        if (this._resolve !== null) {
+            this._resolve();
+            this._resolve = null;
+        }
+
+        if (this._schedulerSubscription !== null) {
+            this._schedulerSubscription.unsubscribe();
+            this._schedulerSubscription = null;
+        }
+
+        if (this._midiOutput && this._midiOutput.clear) {
+            this._midiOutput.clear();
+        }
+    }
+
+    private _promise(): Promise<void> {
         return new Promise((resolve, reject) => {
             this._resolve = resolve;
             this._schedulerSubscription = this._scheduler.subscribe({
@@ -58,30 +120,6 @@ export class MidiPlayer implements IMidiPlayer {
                 this._schedulerSubscription.unsubscribe();
             }
         });
-    }
-
-    public pause(): void {
-        if (this._resolve !== null) {
-            this._resolve();
-            this._resolve = null;
-        }
-        if (this._schedulerSubscription !== null) {
-            this._schedulerSubscription?.unsubscribe();
-            this._schedulerSubscription = null;
-        }
-    }
-
-    public resume(): void {}
-
-    public stop(): void {
-        this.pause();
-
-        this._offset = null;
-        this._endedTracks = null;
-    }
-
-    public get playing(): boolean {
-        return this._schedulerSubscription !== null && this._resolve !== null;
     }
 
     private _schedule(start: number, end: number): void {

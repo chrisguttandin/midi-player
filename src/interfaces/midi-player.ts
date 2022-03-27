@@ -1,11 +1,12 @@
+import { PlayerState } from '../types/player-state';
 export interface IMidiPlayer {
     play(): Promise<void>;
 
     pause(): void;
 
-    resume(): void;
+    resume(): Promise<void>;
 
     stop(): void;
 
-    get playing(): boolean;
+    get state(): PlayerState;
 }
