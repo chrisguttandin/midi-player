@@ -1,4 +1,5 @@
 import { PlayerState } from '../types/player-state';
+
 export interface IMidiPlayer {
     play(): Promise<void>;
 
