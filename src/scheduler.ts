@@ -23,6 +23,10 @@ export class Scheduler {
         this._subject = new Subject();
     }
 
+    public get performance(): Window['performance'] {
+        return this._performance;
+    }
+
     public subscribe(observer: Partial<Observer<IInterval>>): { unsubscribe(): void } {
         this._numberOfSubscribers += 1;
 

@@ -1,5 +1,5 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
-import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
+import { IMidiFile, IMidiStatusEvent, TMidiEvent } from 'midi-json-parser-worker';
 import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions } from './interfaces';
 import { PlayerState } from './types/player-state';
 import { Scheduler } from './scheduler';
@@ -19,13 +19,15 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _paused: null | number;
 
+    private _latest: null | number;
+
     private _resolve: null | (() => void);
 
     private _scheduler: Scheduler;
 
     private _schedulerSubscription: null | { unsubscribe(): void };
 
-    private _performance: Window['performance'];
+    private _channels: null | number[];
 
     constructor({ encodeMidiMessage, json, midiFileSlicer, midiOutput, scheduler }: IMidiPlayerOptions) {
         this._encodeMidiMessage = encodeMidiMessage;
@@ -35,10 +37,11 @@ export class MidiPlayer implements IMidiPlayer {
         this._midiOutput = midiOutput;
         this._offset = null;
         this._paused = null;
+        this._latest = null;
         this._resolve = null;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
-        this._performance = performance;
+        this._channels = null;
     }
 
     public play(): Promise<void> {
@@ -58,7 +61,7 @@ export class MidiPlayer implements IMidiPlayer {
 
         this._pause();
 
-        this._paused = this._performance.now();
+        this._paused = this._scheduler.performance.now();
     }
 
     public resume(): Promise<void> {
@@ -66,7 +69,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is not currently paused.');
         }
 
-        this._offset! += this._performance.now() - this._paused!;
+        this._offset! += this._scheduler.performance.now() - this._paused!;
 
         return this._promise();
     }
@@ -100,6 +103,17 @@ export class MidiPlayer implements IMidiPlayer {
         if (this._midiOutput && this._midiOutput.clear) {
             this._midiOutput.clear();
         }
+
+        this._channels?.forEach(channel => {
+            const allSoundOff = this._encodeMidiMessage({
+                channel,
+                controlChange: {
+                  type: 120,
+                  value: 127
+                }
+              } as TMidiEvent);
+              this._midiOutput.send(allSoundOff, this._latest! + 1);
+        })
     }
 
     private _promise(): Promise<void> {
@@ -110,6 +124,9 @@ export class MidiPlayer implements IMidiPlayer {
                 next: ({ end, start }) => {
                     if (this._offset === null) {
                         this._offset = start;
+                    }
+                    if (this._latest === null) {
+                        this._latest = start;
                     }
 
                     this._schedule(start, end);
@@ -131,7 +148,16 @@ export class MidiPlayer implements IMidiPlayer {
 
         events
             .filter(({ event }) => MidiPlayer._isSendableEvent(event))
-            .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
+            .forEach(({ event, time }) => {
+                this._midiOutput.send(this._encodeMidiMessage(event), start + time);
+                this._latest = Math.max(this._latest!, start + time);
+            });
+
+        // Accumulate unique channels to send AllSoundOff message in case of pause / stop.
+        this._channels = [...new Set(events
+            .filter(({ event }) => 'channel' in event)
+            .map(({ event }) => (event as IMidiStatusEvent).channel))
+        ];
 
         const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
 
