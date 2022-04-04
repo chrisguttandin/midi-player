@@ -41,7 +41,18 @@ export class MidiPlayer implements IMidiPlayer {
         this._resolve = null;
         this._scheduler = scheduler;
         this._schedulerSubscription = null;
-        this._channels = null;
+
+        // List all channels that are contained in the MIDI file.
+        // We will use it to send All Sound Off messages on pause / stop.
+        this._channels = [...new Set(
+            this._json.tracks.reduce((channels, track) => {
+                const event = track.find(event => 'channel' in event);
+                if (event) {
+                    channels.push((event as IMidiStatusEvent).channel)
+                }
+                return channels;
+            }, [] as number[])
+        )];
     }
 
     public play(): Promise<void> {
@@ -111,8 +122,8 @@ export class MidiPlayer implements IMidiPlayer {
                   type: 120,
                   value: 127
                 }
-              } as TMidiEvent);
-              this._midiOutput.send(allSoundOff, this._latest! + 1);
+            } as TMidiEvent);
+            this._midiOutput.send(allSoundOff, this._latest! + 1);
         })
     }
 
@@ -152,12 +163,6 @@ export class MidiPlayer implements IMidiPlayer {
                 this._midiOutput.send(this._encodeMidiMessage(event), start + time);
                 this._latest = Math.max(this._latest!, start + time);
             });
-
-        // Accumulate unique channels to send AllSoundOff message in case of pause / stop.
-        this._channels = [...new Set(events
-            .filter(({ event }) => 'channel' in event)
-            .map(({ event }) => (event as IMidiStatusEvent).channel))
-        ];
 
         const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
 
