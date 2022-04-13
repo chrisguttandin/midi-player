@@ -111,9 +111,7 @@ export class MidiPlayer implements IMidiPlayer {
             this._schedulerSubscription = null;
         }
 
-        if (this._midiOutput && this._midiOutput.clear) {
-            this._midiOutput.clear();
-        }
+        this._midiOutput.clear?.();
 
         this._channels?.forEach(channel => {
             const allSoundOff = this._encodeMidiMessage({
