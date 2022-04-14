@@ -72,7 +72,7 @@ export class MidiPlayer implements IMidiPlayer {
 
         this._pause();
 
-        this._paused = this._scheduler.performance.now();
+        this._paused = this._scheduler.now();
     }
 
     public resume(): Promise<void> {
@@ -80,7 +80,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is not currently paused.');
         }
 
-        this._offset! += this._scheduler.performance.now() - this._paused!;
+        this._offset! += this._scheduler.now() - this._paused!;
 
         return this._promise();
     }
