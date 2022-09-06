@@ -1,6 +1,6 @@
 # midi-player
 
-**A simple MIDI player which sends MIDI messages to connected devices.**
+**A MIDI player which sends MIDI messages to connected devices.**
 
 [![version](https://img.shields.io/npm/v/midi-player.svg?style=flat-square)](https://www.npmjs.com/package/midi-player)
 
