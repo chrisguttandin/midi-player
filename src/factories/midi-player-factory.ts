@@ -6,6 +6,12 @@ export const createMidiPlayerFactory: TMidiPlayerFactoryFactory = (createMidiFil
     return (options) => {
         const midiFileSlicer = createMidiFileSlicer(options.json);
 
-        return new MidiPlayer({ ...options, encodeMidiMessage, midiFileSlicer, scheduler });
+        return new MidiPlayer({
+            filterMidiMessage: (event) => 'controlChange' in event || 'noteOff' in event || 'noteOn' in event || 'programChange' in event,
+            ...options,
+            encodeMidiMessage,
+            midiFileSlicer,
+            scheduler
+        });
     };
 };

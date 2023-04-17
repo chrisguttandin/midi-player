@@ -3,7 +3,7 @@ import { TMidiEvent } from 'midi-json-parser-worker';
 import { Scheduler } from '../scheduler';
 import { IMidiPlayerFactoryOptions } from './midi-player-factory-options';
 
-export interface IMidiPlayerOptions extends IMidiPlayerFactoryOptions {
+export interface IMidiPlayerOptions extends Required<IMidiPlayerFactoryOptions> {
     midiFileSlicer: MidiFileSlicer;
 
     scheduler: Scheduler;

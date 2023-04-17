@@ -40,4 +40,13 @@ const midiPlayer = create({ json, midiOutput });
 await midiPlayer.play();
 ```
 
+By default only control change, note off, note on and program change events will be sent. But it's possible to provide a custom filter function. The following player will only send note off and note on events.
+
+```js
+const midiPlayer = create({
+    filterMidiMessage: (event) => 'noteOff' in event || 'noteOn' in event
+    // ... other options as described above
+});
+```
+
 If you want to play a binary MIDI file you can use the [midi-json-parser](https://github.com/chrisguttandin/midi-json-parser) package to transform it into a compatible JSON representation.

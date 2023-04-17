@@ -7,6 +7,7 @@ import { performanceMock } from '../mock/performance';
 import { stub } from 'sinon';
 
 describe('MidiPlayer', () => {
+    let filterMidiMessage;
     let encodeMidiMessage;
     let json;
     let midiPlayer;
@@ -14,6 +15,7 @@ describe('MidiPlayer', () => {
     let sequence;
 
     beforeEach(() => {
+        filterMidiMessage = stub();
         encodeMidiMessage = stub();
 
         json = {
@@ -24,6 +26,7 @@ describe('MidiPlayer', () => {
 
         midiPlayer = new MidiPlayer({
             encodeMidiMessage,
+            filterMidiMessage,
             json,
             midiFileSlicer: midiFileSlicerMock,
             midiOutput: midiOutputMock,
@@ -32,13 +35,12 @@ describe('MidiPlayer', () => {
 
         sequence = 'a fake sequence';
 
-        encodeMidiMessage.returns(sequence);
-
         midiFileSlicerMock.slice.reset();
-
         midiOutputMock.send.reset();
-
         performanceMock.now.reset();
+
+        filterMidiMessage.returns(true);
+        encodeMidiMessage.returns(sequence);
         performanceMock.now.returns(200);
     });
 
@@ -55,6 +57,9 @@ describe('MidiPlayer', () => {
 
             expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
             expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+
+            expect(filterMidiMessage).to.have.been.calledOnce;
+            expect(filterMidiMessage).to.have.been.calledWithExactly(event);
 
             expect(encodeMidiMessage).to.have.been.calledOnce;
             expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
