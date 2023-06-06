@@ -10,6 +10,7 @@ export class Scheduler {
 
     private _numberOfSubscribers: number;
 
+    // tslint:disable-next-line:rxjs-no-exposed-subjects
     private _subject: Subject<IInterval>;
 
     constructor(
