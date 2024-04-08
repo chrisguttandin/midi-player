@@ -1,10 +1,10 @@
 import { clearInterval, setInterval } from 'worker-timers';
+import { spy, stub } from 'sinon';
 import { MidiPlayer } from '../../src/midi-player';
 import { Scheduler } from '../../src/scheduler';
 import { midiFileSlicerMock } from '../mock/midi-file-slicer';
 import { midiOutputMock } from '../mock/midi-output';
 import { performanceMock } from '../mock/performance';
-import { stub } from 'sinon';
 
 describe('MidiPlayer', () => {
     let filterMidiMessage;
@@ -123,6 +123,44 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 return midiPlayer.play();
+            });
+        });
+    });
+
+    describe('stop()', () => {
+        describe('when not playing', () => {
+            it('should throw an error', () => {
+                expect(() => midiPlayer.stop()).to.throw(Error, 'The player is already stopped.');
+            });
+        });
+
+        describe('when playing', () => {
+            let then;
+
+            beforeEach(() => {
+                then = spy();
+
+                const event = {
+                    noteOn: 'a fake note on event'
+                };
+
+                midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+
+                midiPlayer.play().then(then);
+            });
+
+            it('should return undefined', () => {
+                expect(midiPlayer.stop()).to.be.undefined;
+            });
+
+            it('should resolve the promise returned by play()', async () => {
+                midiPlayer.stop();
+
+                expect(then).to.have.not.been.called;
+
+                await Promise.resolve();
+
+                expect(then).to.have.been.calledOnce;
             });
         });
     });
