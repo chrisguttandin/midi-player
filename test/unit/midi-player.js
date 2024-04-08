@@ -35,9 +35,9 @@ describe('MidiPlayer', () => {
 
         sequence = 'a fake sequence';
 
-        midiFileSlicerMock.slice.reset();
-        midiOutputMock.send.reset();
-        performanceMock.now.reset();
+        midiFileSlicerMock.slice.resetHistory();
+        midiOutputMock.send.resetHistory();
+        performanceMock.now.resetHistory();
 
         filterMidiMessage.returns(true);
         encodeMidiMessage.returns(sequence);
@@ -45,37 +45,85 @@ describe('MidiPlayer', () => {
     });
 
     describe('play()', () => {
-        it('should schedule all events up to the lookahead', () => {
-            const event = {
-                noteOn: 'a fake note on event'
-            };
-            const time = 500;
+        describe('with no previous invocation', () => {
+            it('should schedule all events up to the lookahead', () => {
+                const event = {
+                    noteOn: 'a fake note on event'
+                };
 
-            midiFileSlicerMock.slice.returns([{ event, time }]);
+                midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
 
-            midiPlayer.play();
+                midiPlayer.play();
 
-            expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-            expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
+                expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
 
-            expect(filterMidiMessage).to.have.been.calledOnce;
-            expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                expect(filterMidiMessage).to.have.been.calledOnce;
+                expect(filterMidiMessage).to.have.been.calledWithExactly(event);
 
-            expect(encodeMidiMessage).to.have.been.calledOnce;
-            expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                expect(encodeMidiMessage).to.have.been.calledOnce;
+                expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
 
-            expect(midiOutputMock.send).to.have.been.calledOnce;
-            expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 700);
+                expect(midiOutputMock.send).to.have.been.calledOnce;
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 700);
+            });
+
+            it('should return a promise', () => {
+                expect(midiPlayer.play()).to.be.a('promise');
+            });
+
+            it('should resolve the promise after playing the track', () => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                return midiPlayer.play();
+            });
         });
 
-        it('should return a promise', () => {
-            expect(midiPlayer.play()).to.be.a('promise');
-        });
+        describe('with one previous invocation', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
-        it('should resolve the promise after playing the track', () => {
-            midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiPlayer.play();
 
-            return midiPlayer.play();
+                performanceMock.now.returns(1200);
+
+                encodeMidiMessage.resetHistory();
+                filterMidiMessage.resetHistory();
+                midiFileSlicerMock.slice.resetHistory();
+                midiOutputMock.send.resetHistory();
+            });
+
+            it('should schedule all events up to the lookahead', () => {
+                const event = {
+                    noteOn: 'a fake note on event'
+                };
+
+                midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+
+                midiPlayer.play();
+
+                expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
+                expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+
+                expect(filterMidiMessage).to.have.been.calledOnce;
+                expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+
+                expect(encodeMidiMessage).to.have.been.calledOnce;
+                expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+
+                expect(midiOutputMock.send).to.have.been.calledOnce;
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1700);
+            });
+
+            it('should return a promise', () => {
+                expect(midiPlayer.play()).to.be.a('promise');
+            });
+
+            it('should resolve the promise after playing the track', () => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                return midiPlayer.play();
+            });
         });
     });
 });

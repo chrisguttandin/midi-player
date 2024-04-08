@@ -38,7 +38,7 @@ export class MidiPlayer implements IMidiPlayer {
     }
 
     public play(): Promise<void> {
-        if (this._schedulerSubscription !== null || this._endedTracks !== null) {
+        if (this._schedulerSubscription !== null || this._endedTracks !== null || this._offset !== null) {
             throw new Error('The player is currently playing.');
         }
 
@@ -59,6 +59,7 @@ export class MidiPlayer implements IMidiPlayer {
 
             if (this._resolve === null) {
                 this._schedulerSubscription.unsubscribe();
+                this._schedulerSubscription = null;
             }
         });
     }
@@ -81,10 +82,11 @@ export class MidiPlayer implements IMidiPlayer {
         if (this._endedTracks === this._json.tracks.length) {
             if (this._schedulerSubscription !== null) {
                 this._schedulerSubscription.unsubscribe();
+                this._schedulerSubscription = null;
             }
 
-            this._schedulerSubscription = null;
             this._endedTracks = null;
+            this._offset = null;
 
             this._resolve();
 
