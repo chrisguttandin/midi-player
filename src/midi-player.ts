@@ -1,12 +1,10 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
-import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions } from './interfaces';
+import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions, IState } from './interfaces';
 import { Scheduler } from './scheduler';
 
 export class MidiPlayer implements IMidiPlayer {
     private _encodeMidiMessage: (event: TMidiEvent) => Uint8Array;
-
-    private _endedTracks: null | number;
 
     private _filterMidiMessage: (event: TMidiEvent) => boolean;
 
@@ -16,78 +14,61 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _midiOutput: IMidiOutput;
 
-    private _offset: null | number;
-
-    private _resolve: null | (() => void);
-
     private _scheduler: Scheduler;
 
-    private _schedulerSubscription: null | { unsubscribe(): void };
+    private _state: null | IState;
 
     constructor({ encodeMidiMessage, filterMidiMessage, json, midiFileSlicer, midiOutput, scheduler }: IMidiPlayerOptions) {
         this._encodeMidiMessage = encodeMidiMessage;
-        this._endedTracks = null;
         this._filterMidiMessage = filterMidiMessage;
         this._json = json;
         this._midiFileSlicer = midiFileSlicer;
         this._midiOutput = midiOutput;
-        this._offset = null;
-        this._resolve = null;
         this._scheduler = scheduler;
-        this._schedulerSubscription = null;
+        this._state = null;
     }
 
     public play(): Promise<void> {
-        if (this._schedulerSubscription !== null || this._endedTracks !== null || this._offset !== null) {
+        if (this._state !== null) {
             throw new Error('The player is currently playing.');
         }
 
-        this._endedTracks = 0;
-
         return new Promise((resolve, reject) => {
-            this._resolve = resolve;
-            this._schedulerSubscription = this._scheduler.subscribe({
+            const schedulerSubscription = this._scheduler.subscribe({
                 error: (err) => reject(err),
                 next: ({ end, start }) => {
-                    if (this._offset === null) {
-                        this._offset = start;
+                    if (this._state === null) {
+                        this._state = { endedTracks: 0, offset: start, resolve, schedulerSubscription: null };
                     }
 
-                    this._schedule(start, end);
+                    this._schedule(start, end, this._state);
                 }
             });
 
-            if (this._resolve === null) {
-                this._schedulerSubscription.unsubscribe();
-                this._schedulerSubscription = null;
+            if (this._state === null) {
+                schedulerSubscription.unsubscribe();
+            } else {
+                this._state.schedulerSubscription = schedulerSubscription;
             }
         });
     }
 
     public stop(): void {
-        if (this._schedulerSubscription === null || this._endedTracks === null || this._offset === null) {
+        if (this._state === null) {
             throw new Error('The player is already stopped.');
         }
 
-        this._schedulerSubscription.unsubscribe();
-        this._schedulerSubscription = null;
+        const { resolve, schedulerSubscription } = this._state;
 
-        this._endedTracks = null;
-        this._offset = null;
+        schedulerSubscription?.unsubscribe();
 
-        if (this._resolve !== null) {
-            this._resolve();
+        this._state = null;
 
-            this._resolve = null;
-        }
+        resolve();
     }
 
-    private _schedule(start: number, end: number): void {
-        if (this._endedTracks === null || this._offset === null || this._resolve === null) {
-            throw new Error(); // @todo
-        }
-
-        const events = this._midiFileSlicer.slice(start - this._offset, end - this._offset);
+    private _schedule(start: number, end: number, state: IState): void {
+        const events = this._midiFileSlicer.slice(start - state.offset, end - state.offset);
 
         events
             .filter(({ event }) => this._filterMidiMessage(event))
@@ -95,20 +76,16 @@ export class MidiPlayer implements IMidiPlayer {
 
         const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
 
-        this._endedTracks += endedTracks;
+        state.endedTracks += endedTracks;
 
-        if (this._endedTracks === this._json.tracks.length) {
-            if (this._schedulerSubscription !== null) {
-                this._schedulerSubscription.unsubscribe();
-                this._schedulerSubscription = null;
-            }
+        if (state.endedTracks === this._json.tracks.length) {
+            const { resolve, schedulerSubscription } = state;
 
-            this._endedTracks = null;
-            this._offset = null;
+            schedulerSubscription?.unsubscribe();
 
-            this._resolve();
+            this._state = null;
 
-            this._resolve = null;
+            resolve();
         }
     }
 
