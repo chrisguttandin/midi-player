@@ -58,13 +58,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is already stopped.');
         }
 
-        const { resolve, schedulerSubscription } = this._state;
-
-        schedulerSubscription?.unsubscribe();
-
-        this._state = null;
-
-        resolve();
+        this._stop(this._state);
     }
 
     private _schedule(start: number, end: number, state: IState): void {
@@ -79,14 +73,18 @@ export class MidiPlayer implements IMidiPlayer {
         state.endedTracks += endedTracks;
 
         if (state.endedTracks === this._json.tracks.length) {
-            const { resolve, schedulerSubscription } = state;
-
-            schedulerSubscription?.unsubscribe();
-
-            this._state = null;
-
-            resolve();
+            this._stop(state);
         }
+    }
+
+    private _stop(state: IState): void {
+        const { resolve, schedulerSubscription } = state;
+
+        schedulerSubscription?.unsubscribe();
+
+        this._state = null;
+
+        resolve();
     }
 
     private static _isEndOfTrack(event: TMidiEvent): boolean {
