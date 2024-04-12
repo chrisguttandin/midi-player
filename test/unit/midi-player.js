@@ -36,6 +36,7 @@ describe('MidiPlayer', () => {
         sequence = 'a fake sequence';
 
         midiFileSlicerMock.slice.resetHistory();
+        midiOutputMock.clear.resetHistory();
         midiOutputMock.send.resetHistory();
         performanceMock.now.resetHistory();
 
@@ -147,6 +148,13 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
 
                 midiPlayer.play().then(then);
+            });
+
+            it('should call clear() on the midiOutput', () => {
+                midiPlayer.stop();
+
+                expect(midiOutputMock.clear).to.have.been.calledOnce;
+                expect(midiOutputMock.clear).to.have.been.calledWithExactly();
             });
 
             it('should return undefined', () => {

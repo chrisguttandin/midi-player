@@ -58,6 +58,8 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is already stopped.');
         }
 
+        // Bug #1: Chrome does not yet implement the clear() method.
+        this._midiOutput.clear?.();
         this._stop(this._state);
     }
 
