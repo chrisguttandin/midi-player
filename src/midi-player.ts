@@ -3,6 +3,8 @@ import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
 import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions, IState } from './interfaces';
 import { Scheduler } from './scheduler';
 
+const ALL_SOUND_OFF_EVENT_DATA = Array.from({ length: 16 }, (_, index) => new Uint8Array([176 + index, 120, 0]));
+
 export class MidiPlayer implements IMidiPlayer {
     private _encodeMidiMessage: (event: TMidiEvent) => Uint8Array;
 
@@ -60,6 +62,7 @@ export class MidiPlayer implements IMidiPlayer {
 
         // Bug #1: Chrome does not yet implement the clear() method.
         this._midiOutput.clear?.();
+        ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
         this._stop(this._state);
     }
 
