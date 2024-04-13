@@ -148,6 +148,9 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
 
                 midiPlayer.play().then(then);
+
+                midiOutputMock.clear.resetHistory();
+                midiOutputMock.send.resetHistory();
             });
 
             it('should call clear() on the midiOutput', () => {
@@ -155,6 +158,28 @@ describe('MidiPlayer', () => {
 
                 expect(midiOutputMock.clear).to.have.been.calledOnce;
                 expect(midiOutputMock.clear).to.have.been.calledWithExactly();
+            });
+
+            it('should call send() on the midiOutput', () => {
+                midiPlayer.stop();
+
+                expect(midiOutputMock.send).to.have.been.callCount(16);
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([176, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([177, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([178, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([179, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([180, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([181, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([182, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([183, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([184, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([185, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([186, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([187, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([188, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([189, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([190, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([191, 120, 0]));
             });
 
             it('should return undefined', () => {
