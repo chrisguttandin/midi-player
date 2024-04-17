@@ -22,10 +22,10 @@ describe('createStartScheduler()', () => {
     describe('startScheduler()', () => {
         let handler;
         let intervalId;
-        let observer;
+        let next;
 
         beforeEach(() => {
-            observer = { next: spy() };
+            next = spy();
 
             performance.now.returns(3000);
             setInterval.callsFake((...args) => {
@@ -36,57 +36,57 @@ describe('createStartScheduler()', () => {
         });
 
         it('should call performance.now()', () => {
-            startScheduler(observer);
+            startScheduler(next);
 
             expect(performance.now).to.have.been.calledOnceWithExactly();
         });
 
         it('should call setInterval()', () => {
-            startScheduler(observer);
+            startScheduler(next);
 
             expect(setInterval).to.have.been.calledOnceWithExactly(handler, 50);
             expect(handler).to.be.a('function');
         });
 
-        it('should call observer.next()', () => {
-            startScheduler(observer);
+        it('should call next()', () => {
+            startScheduler(next);
 
-            expect(observer.next).to.have.been.calledOnceWithExactly({ end: 4000, start: 3000 });
+            expect(next).to.have.been.calledOnceWithExactly({ end: 4000, start: 3000 });
         });
 
-        it('should not call observer.next() when invoking the handler within the interval', () => {
-            startScheduler(observer);
+        it('should not call next() when invoking the handler within the interval', () => {
+            startScheduler(next);
 
-            observer.next.resetHistory();
+            next.resetHistory();
             performance.now.resetHistory();
             performance.now.returns(3400);
 
             handler();
 
-            expect(observer.next).to.have.not.been.called;
+            expect(next).to.have.not.been.called;
             expect(performance.now).to.have.been.calledOnceWithExactly();
         });
 
-        it('should call observer.next() when invoking the handler after the interval', () => {
-            startScheduler(observer);
+        it('should call next() when invoking the handler after the interval', () => {
+            startScheduler(next);
 
-            observer.next.resetHistory();
+            next.resetHistory();
             performance.now.resetHistory();
             performance.now.returns(3500);
 
             handler();
 
-            expect(observer.next).to.have.been.calledOnceWithExactly({ end: 4500, start: 4000 });
+            expect(next).to.have.been.calledOnceWithExactly({ end: 4500, start: 4000 });
             expect(performance.now).to.have.been.calledOnceWithExactly();
         });
 
         it('should return a function', () => {
-            expect(startScheduler(observer)).to.be.a('function');
+            expect(startScheduler(next)).to.be.a('function');
         });
 
         describe('stopScheduler()', () => {
             it('should call clearInterval()', () => {
-                startScheduler(observer)();
+                startScheduler(next)();
 
                 expect(clearInterval).to.have.been.calledOnceWithExactly(intervalId);
             });

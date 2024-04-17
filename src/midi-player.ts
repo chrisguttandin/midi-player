@@ -35,16 +35,13 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is currently playing.');
         }
 
-        return new Promise((resolve, reject) => {
-            const stopScheduler = this._startScheduler({
-                error: (err) => reject(err),
-                next: ({ end, start }) => {
-                    if (this._state === null) {
-                        this._state = { endedTracks: 0, offset: start, resolve, stopScheduler: null };
-                    }
-
-                    this._schedule(start, end, this._state);
+        return new Promise((resolve) => {
+            const stopScheduler = this._startScheduler(({ end, start }) => {
+                if (this._state === null) {
+                    this._state = { endedTracks: 0, offset: start, resolve, stopScheduler: null };
                 }
+
+                this._schedule(start, end, this._state);
             });
 
             if (this._state === null) {
