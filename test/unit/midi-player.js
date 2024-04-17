@@ -1,7 +1,7 @@
 import { clearInterval, setInterval } from 'worker-timers';
 import { spy, stub } from 'sinon';
 import { MidiPlayer } from '../../src/midi-player';
-import { Scheduler } from '../../src/scheduler';
+import { createStartScheduler } from '../../src/factories/start-scheduler';
 import { midiFileSlicerMock } from '../mock/midi-file-slicer';
 import { midiOutputMock } from '../mock/midi-output';
 import { performanceMock } from '../mock/performance';
@@ -11,8 +11,8 @@ describe('MidiPlayer', () => {
     let encodeMidiMessage;
     let json;
     let midiPlayer;
-    let scheduler;
     let sequence;
+    let startScheduler;
 
     beforeEach(() => {
         filterMidiMessage = stub();
@@ -22,7 +22,7 @@ describe('MidiPlayer', () => {
             tracks: ['a fake track']
         };
 
-        scheduler = new Scheduler(clearInterval, performanceMock, setInterval);
+        startScheduler = createStartScheduler(clearInterval, performanceMock, setInterval);
 
         midiPlayer = new MidiPlayer({
             encodeMidiMessage,
@@ -30,7 +30,7 @@ describe('MidiPlayer', () => {
             json,
             midiFileSlicer: midiFileSlicerMock,
             midiOutput: midiOutputMock,
-            scheduler
+            startScheduler
         });
 
         sequence = 'a fake sequence';

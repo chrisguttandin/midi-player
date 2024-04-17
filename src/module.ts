@@ -1,7 +1,7 @@
 import { clearInterval, setInterval } from 'worker-timers';
 import { createMidiFileSlicer } from './factories/midi-file-slicer';
 import { createMidiPlayerFactory } from './factories/midi-player-factory';
-import { Scheduler } from './scheduler';
+import { createStartScheduler } from './factories/start-scheduler';
 import { TMidiPlayerFactory } from './types';
 
 /*
@@ -11,8 +11,6 @@ import { TMidiPlayerFactory } from './types';
 export * from './interfaces/index';
 export * from './types/index';
 
-const scheduler = new Scheduler(clearInterval, performance, setInterval);
-
-const createMidiPlayer = createMidiPlayerFactory(createMidiFileSlicer, scheduler);
+const createMidiPlayer = createMidiPlayerFactory(createMidiFileSlicer, createStartScheduler(clearInterval, performance, setInterval));
 
 export const create: TMidiPlayerFactory = (options) => createMidiPlayer(options);

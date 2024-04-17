@@ -3,7 +3,7 @@ export interface IState {
 
     offset: number;
 
-    schedulerSubscription: null | { unsubscribe(): void };
+    stopScheduler: null | (() => void);
 
     resolve(): void;
 }

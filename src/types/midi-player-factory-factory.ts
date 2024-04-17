@@ -1,4 +1,7 @@
 import { TMidiFileSlicerFactory, TMidiPlayerFactory } from '.';
-import { Scheduler } from '../scheduler';
+import { createStartScheduler } from '../factories/start-scheduler';
 
-export type TMidiPlayerFactoryFactory = (createMidiFileSlicer: TMidiFileSlicerFactory, scheduler: Scheduler) => TMidiPlayerFactory;
+export type TMidiPlayerFactoryFactory = (
+    createMidiFileSlicer: TMidiFileSlicerFactory,
+    startScheduler: ReturnType<typeof createStartScheduler>
+) => TMidiPlayerFactory;
