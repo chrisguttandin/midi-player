@@ -5,9 +5,9 @@ const INTERVAL = 500;
 export const createStartScheduler =
     (clearInterval: Window['clearInterval'], performance: Window['performance'], setInterval: Window['setInterval']) =>
     (next: (interval: IInterval) => void) => {
-        const currentTime = performance.now();
+        const start = performance.now();
 
-        let nextTick = currentTime + INTERVAL;
+        let nextTick = start + INTERVAL;
         let end = nextTick + INTERVAL;
 
         const intervalId = setInterval(() => {
@@ -19,7 +19,7 @@ export const createStartScheduler =
             }
         }, INTERVAL / 10);
 
-        next({ end, start: currentTime });
+        next({ end, start });
 
         return () => {
             clearInterval(intervalId);
