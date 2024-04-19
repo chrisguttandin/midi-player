@@ -8,16 +8,18 @@ export const createStartScheduler =
         const currentTime = performance.now();
 
         let nextTick = currentTime + INTERVAL;
+        let end = nextTick + INTERVAL;
 
         const intervalId = setInterval(() => {
             if (performance.now() >= nextTick) {
-                nextTick += INTERVAL;
+                nextTick = end;
+                end += INTERVAL;
 
-                next({ end: nextTick + INTERVAL, start: nextTick });
+                next({ end, start: nextTick });
             }
         }, INTERVAL / 10);
 
-        next({ end: nextTick + INTERVAL, start: currentTime });
+        next({ end, start: currentTime });
 
         return () => {
             clearInterval(intervalId);
