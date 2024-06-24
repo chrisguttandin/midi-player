@@ -136,10 +136,24 @@ describe('MidiPlayer', () => {
                 expect(() => midiPlayer.pause()).to.throw(Error, 'The player is not playing.');
             });
         });
+
+        describe('when ended', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                midiPlayer.play();
+
+                performanceMock.now.returns(1200);
+            });
+
+            it('should throw an error', () => {
+                expect(() => midiPlayer.pause()).to.throw(Error, 'The player is not playing.');
+            });
+        });
     });
 
     describe('play()', () => {
-        describe('with no previous invocation', () => {
+        describe('when not playing', () => {
             it('should schedule all events up to the lookahead', () => {
                 const event = {
                     noteOn: 'a fake note on event'
@@ -173,7 +187,46 @@ describe('MidiPlayer', () => {
             });
         });
 
-        describe('with one previous invocation', () => {
+        describe('when playing', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([
+                    {
+                        event: {
+                            noteOn: 'a fake note on event'
+                        },
+                        time: 500
+                    }
+                ]);
+
+                midiPlayer.play();
+            });
+
+            it('should throw an error', () => {
+                expect(() => midiPlayer.play()).to.throw(Error, 'The player is not stopped.');
+            });
+        });
+
+        describe('when paused', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([
+                    {
+                        event: {
+                            noteOn: 'a fake note on event'
+                        },
+                        time: 500
+                    }
+                ]);
+
+                midiPlayer.play();
+                midiPlayer.pause();
+            });
+
+            it('should throw an error', () => {
+                expect(() => midiPlayer.play()).to.throw(Error, 'The player is not stopped.');
+            });
+        });
+
+        describe('when ended', () => {
             beforeEach(() => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
@@ -292,6 +345,20 @@ describe('MidiPlayer', () => {
                 return midiPlayer.resume();
             });
         });
+
+        describe('when ended', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                midiPlayer.play();
+
+                performanceMock.now.returns(1200);
+            });
+
+            it('should throw an error', () => {
+                expect(() => midiPlayer.resume()).to.throw(Error, 'The player is not paused.');
+            });
+        });
     });
 
     describe('stop()', () => {
@@ -398,6 +465,20 @@ describe('MidiPlayer', () => {
 
             it('should return undefined', () => {
                 expect(midiPlayer.stop()).to.be.undefined;
+            });
+        });
+
+        describe('when ended', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                midiPlayer.play();
+
+                performanceMock.now.returns(1200);
+            });
+
+            it('should throw an error', () => {
+                expect(() => midiPlayer.stop()).to.throw(Error, 'The player is already stopped.');
             });
         });
     });
