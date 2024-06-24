@@ -35,21 +35,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is currently playing.');
         }
 
-        return new Promise((resolve) => {
-            const stopScheduler = this._startScheduler(({ end, start }) => {
-                if (this._state === null) {
-                    this._state = { endedTracks: 0, offset: start, resolve, stopScheduler: null };
-                }
-
-                this._schedule(start, end, this._state);
-            });
-
-            if (this._state === null) {
-                stopScheduler();
-            } else {
-                this._state.stopScheduler = stopScheduler;
-            }
-        });
+        return this._schedule();
     }
 
     public stop(): void {
@@ -63,20 +49,34 @@ export class MidiPlayer implements IMidiPlayer {
         this._stop(this._state);
     }
 
-    private _schedule(start: number, end: number, state: IState): void {
-        const events = this._midiFileSlicer.slice(start - state.offset, end - state.offset);
+    private _schedule(): Promise<void> {
+        return new Promise((resolve) => {
+            const stopScheduler = this._startScheduler(({ end, start }) => {
+                if (this._state === null) {
+                    this._state = { endedTracks: 0, offset: start, resolve, stopScheduler: null };
+                }
 
-        events
-            .filter(({ event }) => this._filterMidiMessage(event))
-            .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
+                const events = this._midiFileSlicer.slice(start - this._state.offset, end - this._state.offset);
 
-        const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
+                events
+                    .filter(({ event }) => this._filterMidiMessage(event))
+                    .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
 
-        state.endedTracks += endedTracks;
+                const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
 
-        if (state.endedTracks === this._json.tracks.length) {
-            this._stop(state);
-        }
+                this._state.endedTracks += endedTracks;
+
+                if (this._state.endedTracks === this._json.tracks.length) {
+                    this._stop(this._state);
+                }
+            });
+
+            if (this._state === null) {
+                stopScheduler();
+            } else {
+                this._state.stopScheduler = stopScheduler;
+            }
+        });
     }
 
     private _stop(state: IState): void {
