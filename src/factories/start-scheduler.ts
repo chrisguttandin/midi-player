@@ -23,5 +23,7 @@ export const createStartScheduler =
 
         return () => {
             clearInterval(intervalId);
+
+            return performance.now() - start;
         };
     };

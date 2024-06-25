@@ -30,18 +30,80 @@ export class MidiPlayer implements IMidiPlayer {
         this._state = null;
     }
 
-    public play(): Promise<void> {
-        if (this._state !== null) {
-            throw new Error('The player is currently playing.');
+    public get state(): 'paused' | 'playing' | 'stopped' {
+        return this._state === null ? 'stopped' : this._state.stopScheduler === null ? 'paused' : 'playing';
+    }
+
+    public pause(): void {
+        if (this._state === null || this._state.stopScheduler === null) {
+            throw new Error('The player is not playing.');
         }
 
+        this._clear();
+
+        const { resolve, stopScheduler } = this._state;
+
+        this._state.offset = stopScheduler();
+        this._state.stopScheduler = null;
+
+        resolve();
+    }
+
+    public play(): Promise<void> {
+        if (this._state !== null) {
+            throw new Error('The player is not stopped.');
+        }
+
+        return this._schedule(0, 0);
+    }
+
+    public resume(): Promise<void> {
+        if (this._state === null || this._state.stopScheduler !== null) {
+            throw new Error('The player is not paused.');
+        }
+
+        const { endedTracks, offset } = this._state;
+
+        this._state = null;
+
+        return this._schedule(endedTracks, offset);
+    }
+
+    public stop(): void {
+        if (this._state === null) {
+            throw new Error('The player is already stopped.');
+        }
+
+        if (this._state.stopScheduler !== null) {
+            this._clear();
+            this._stop(this._state);
+        }
+    }
+
+    private _clear(): void {
+        // Bug #1: Chrome does not yet implement the clear() method.
+        this._midiOutput.clear?.();
+        ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
+    }
+
+    private _schedule(endedTracks: number, offset: number): Promise<void> {
         return new Promise((resolve) => {
             const stopScheduler = this._startScheduler(({ end, start }) => {
                 if (this._state === null) {
-                    this._state = { endedTracks: 0, offset: start, resolve, stopScheduler: null };
+                    this._state = { endedTracks, offset: start - offset, resolve, stopScheduler: null };
                 }
 
-                this._schedule(start, end, this._state);
+                const events = this._midiFileSlicer.slice(start - this._state.offset, end - this._state.offset);
+
+                events
+                    .filter(({ event }) => this._filterMidiMessage(event))
+                    .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
+
+                this._state.endedTracks += events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
+
+                if (this._state.endedTracks === this._json.tracks.length) {
+                    this._stop(this._state);
+                }
             });
 
             if (this._state === null) {
@@ -50,33 +112,6 @@ export class MidiPlayer implements IMidiPlayer {
                 this._state.stopScheduler = stopScheduler;
             }
         });
-    }
-
-    public stop(): void {
-        if (this._state === null) {
-            throw new Error('The player is already stopped.');
-        }
-
-        // Bug #1: Chrome does not yet implement the clear() method.
-        this._midiOutput.clear?.();
-        ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
-        this._stop(this._state);
-    }
-
-    private _schedule(start: number, end: number, state: IState): void {
-        const events = this._midiFileSlicer.slice(start - state.offset, end - state.offset);
-
-        events
-            .filter(({ event }) => this._filterMidiMessage(event))
-            .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
-
-        const endedTracks = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
-
-        state.endedTracks += endedTracks;
-
-        if (state.endedTracks === this._json.tracks.length) {
-            this._stop(state);
-        }
     }
 
     private _stop(state: IState): void {
