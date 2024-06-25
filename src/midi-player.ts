@@ -30,6 +30,10 @@ export class MidiPlayer implements IMidiPlayer {
         this._state = null;
     }
 
+    public get state(): 'paused' | 'playing' | 'stopped' {
+        return this._state === null ? 'stopped' : this._state.stopScheduler === null ? 'paused' : 'playing';
+    }
+
     public pause(): void {
         if (this._state === null || this._state.stopScheduler === null) {
             throw new Error('The player is not playing.');
