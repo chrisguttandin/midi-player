@@ -35,9 +35,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is not playing.');
         }
 
-        // Bug #1: Chrome does not yet implement the clear() method.
-        this._midiOutput.clear?.();
-        ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
+        this._clear();
 
         const { resolve, stopScheduler } = this._state;
 
@@ -73,11 +71,15 @@ export class MidiPlayer implements IMidiPlayer {
         }
 
         if (this._state.stopScheduler !== null) {
-            // Bug #1: Chrome does not yet implement the clear() method.
-            this._midiOutput.clear?.();
-            ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
+            this._clear();
             this._stop(this._state);
         }
+    }
+
+    private _clear(): void {
+        // Bug #1: Chrome does not yet implement the clear() method.
+        this._midiOutput.clear?.();
+        ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
     }
 
     private _schedule(endedTracks: number, offset: number): Promise<void> {
