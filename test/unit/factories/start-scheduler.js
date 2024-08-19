@@ -80,15 +80,53 @@ describe('createStartScheduler()', () => {
             expect(performance.now).to.have.been.calledOnceWithExactly();
         });
 
-        it('should return a function', () => {
-            expect(startScheduler(next)).to.be.a('function');
+        it('should return an array with two functions', () => {
+            const array = startScheduler(next);
+
+            expect(array.length).to.equal(2);
+
+            const [peekScheduler, stopScheduler] = array;
+
+            expect(peekScheduler).to.be.a('function');
+            expect(stopScheduler).to.be.a('function');
+        });
+
+        describe('peekScheduler()', () => {
+            let peekScheduler;
+
+            beforeEach(() => {
+                [peekScheduler] = startScheduler(next);
+
+                performance.now.resetHistory();
+                performance.now.returns(4000);
+            });
+
+            it('should call performance.now()', () => {
+                peekScheduler();
+
+                expect(performance.now).to.have.been.calledOnceWithExactly();
+            });
+
+            it('should return the elapsed time', () => {
+                expect(peekScheduler()).to.equal(1000);
+            });
         });
 
         describe('stopScheduler()', () => {
+            let stopScheduler;
+
+            beforeEach(() => {
+                [, stopScheduler] = startScheduler(next);
+            });
+
             it('should call clearInterval()', () => {
-                startScheduler(next)();
+                stopScheduler();
 
                 expect(clearInterval).to.have.been.calledOnceWithExactly(intervalId);
+            });
+
+            it('should return undefined', () => {
+                expect(stopScheduler()).to.be.undefined;
             });
         });
     });
