@@ -43,7 +43,7 @@ export class MidiPlayer implements IMidiPlayer {
         this._state = null;
     }
 
-    public get position(): number | null {
+    public get position(): null | number {
         return this._state === null ? 0 : this._state.offset + (this._state.peekScheduler?.() ?? 0);
     }
 
