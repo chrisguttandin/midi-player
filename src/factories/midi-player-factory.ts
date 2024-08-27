@@ -7,7 +7,7 @@ export const createMidiPlayerFactory: TMidiPlayerFactoryFactory = (createMidiFil
         const midiFileSlicer = createMidiFileSlicer(options.json);
 
         return new MidiPlayer({
-            filterMidiMessage: (event) => 'controlChange' in event || 'noteOff' in event || 'noteOn' in event || 'programChange' in event,
+            filterMidiMessage: (event) => 'channel' in event,
             ...options,
             encodeMidiMessage,
             midiFileSlicer,

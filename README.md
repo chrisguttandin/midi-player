@@ -37,7 +37,7 @@ const midiOutput = Array.from(midiAccess.outputs)[0];
 const midiPlayer = create({ json, midiOutput });
 ```
 
-By default only control change, note off, note on and program change events will be sent. But it's possible to provide a custom filter function. The following player will only send note off and note on events.
+By default all status events will be sent. But it's possible to provide a custom filter function. The following player will only send note off and note on events.
 
 ```js
 const midiPlayer = create({
