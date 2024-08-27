@@ -107,3 +107,7 @@ midiPlayer.stop();
 ```
 
 It can only be called when the `state` of the player is not `'stopped'`.
+
+## Acknowledgement
+
+Most of the features of this package have been originally developed by [@infojunkie](https://github.com/infojunkie) who maintains a midi-player fork ([infojunkie/midi-player](https://github.com/infojunkie/midi-player)) with even more functionality.
