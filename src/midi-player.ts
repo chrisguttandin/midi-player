@@ -152,9 +152,7 @@ export class MidiPlayer implements IMidiPlayer {
         });
     }
 
-    private _stop(state: TState): void {
-        const { resolve, stopScheduler } = state;
-
+    private _stop({ resolve, stopScheduler }: TState): void {
         this._state = null;
 
         stopScheduler?.();
