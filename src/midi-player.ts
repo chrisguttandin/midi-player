@@ -121,7 +121,8 @@ export class MidiPlayer implements IMidiPlayer {
                 this._state.endedTracks += endOfTrackEvents.length;
 
                 if (this._state.endedTracks === this._json.tracks.length) {
-                    const timeout = (this._state.peekScheduler?.() ?? 0) + Math.max(...endOfTrackEvents.map(({ time }) => time));
+                    const timeout =
+                        start + Math.max(...endOfTrackEvents.map(({ time }) => time)) - (this._state.peekScheduler?.() ?? start);
 
                     if (timeout > 0) {
                         this._state.stopScheduler?.();
