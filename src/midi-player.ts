@@ -1,6 +1,7 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
 import { createStartScheduler } from './factories/start-scheduler';
+import { createStartTimeoutScheduler } from './factories/start-timeout-scheduler';
 import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions } from './interfaces';
 import { TState } from './types';
 
@@ -19,15 +20,26 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _startScheduler: ReturnType<typeof createStartScheduler>;
 
+    private _startTimeoutScheduler: ReturnType<typeof createStartTimeoutScheduler>;
+
     private _state: null | TState;
 
-    constructor({ encodeMidiMessage, filterMidiMessage, json, midiFileSlicer, midiOutput, startScheduler }: IMidiPlayerOptions) {
+    constructor({
+        encodeMidiMessage,
+        filterMidiMessage,
+        json,
+        midiFileSlicer,
+        midiOutput,
+        startScheduler,
+        startTimeoutScheduler
+    }: IMidiPlayerOptions) {
         this._encodeMidiMessage = encodeMidiMessage;
         this._filterMidiMessage = filterMidiMessage;
         this._json = json;
         this._midiFileSlicer = midiFileSlicer;
         this._midiOutput = midiOutput;
         this._startScheduler = startScheduler;
+        this._startTimeoutScheduler = startTimeoutScheduler;
         this._state = null;
     }
 
@@ -36,11 +48,11 @@ export class MidiPlayer implements IMidiPlayer {
     }
 
     public get state(): 'paused' | 'playing' | 'stopped' {
-        return this._state === null ? 'stopped' : this._state.stopScheduler === null ? 'paused' : 'playing';
+        return this._state === null ? 'stopped' : this._state.peekScheduler === null ? 'paused' : 'playing';
     }
 
     public pause(): void {
-        if (this._state === null || this._state.stopScheduler === null) {
+        if (this._state === null || this._state.peekScheduler === null) {
             throw new Error('The player is not playing.');
         }
 
@@ -63,7 +75,7 @@ export class MidiPlayer implements IMidiPlayer {
     }
 
     public resume(): Promise<void> {
-        if (this._state === null || this._state.stopScheduler !== null) {
+        if (this._state === null || this._state.peekScheduler !== null) {
             throw new Error('The player is not paused.');
         }
 
@@ -104,17 +116,38 @@ export class MidiPlayer implements IMidiPlayer {
                     .filter(({ event }) => this._filterMidiMessage(event))
                     .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
 
-                this._state.endedTracks += events.filter(({ event }) => MidiPlayer._isEndOfTrack(event)).length;
+                const endOfTrackEvents = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event));
+
+                this._state.endedTracks += endOfTrackEvents.length;
 
                 if (this._state.endedTracks === this._json.tracks.length) {
-                    this._stop(this._state);
+                    const timeout = (this._state.peekScheduler?.() ?? 0) + Math.max(...endOfTrackEvents.map(({ time }) => time));
+
+                    if (timeout > 0) {
+                        this._state.stopScheduler?.();
+
+                        this._state = {
+                            ...this._state,
+                            stopScheduler: this._startTimeoutScheduler(() => {
+                                this._state = null;
+
+                                resolve();
+                            }, timeout)
+                        };
+                    } else {
+                        this._stop(this._state);
+                    }
                 }
             });
 
-            if (this._state === null) {
-                stopScheduler();
-            } else {
+            if (this._state?.stopScheduler === null) {
                 this._state = { ...this._state, peekScheduler, stopScheduler };
+            } else {
+                stopScheduler();
+
+                if (this._state !== null) {
+                    this._state = { ...this._state, peekScheduler };
+                }
             }
         });
     }

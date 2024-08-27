@@ -17,6 +17,17 @@ export type TState =
 
           offset: number;
 
+          peekScheduler: null;
+
+          stopScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[1];
+
+          resolve(): void;
+      }
+    | {
+          endedTracks: number;
+
+          offset: number;
+
           peekScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[0];
 
           stopScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[1];

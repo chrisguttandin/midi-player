@@ -2,7 +2,7 @@ import { encodeMidiMessage } from '../helpers/encode-midi-message';
 import { MidiPlayer } from '../midi-player';
 import { TMidiPlayerFactoryFactory } from '../types';
 
-export const createMidiPlayerFactory: TMidiPlayerFactoryFactory = (createMidiFileSlicer, startScheduler) => {
+export const createMidiPlayerFactory: TMidiPlayerFactoryFactory = (createMidiFileSlicer, startScheduler, startTimeoutScheduler) => {
     return (options) => {
         const midiFileSlicer = createMidiFileSlicer(options.json);
 
@@ -11,7 +11,8 @@ export const createMidiPlayerFactory: TMidiPlayerFactoryFactory = (createMidiFil
             ...options,
             encodeMidiMessage,
             midiFileSlicer,
-            startScheduler
+            startScheduler,
+            startTimeoutScheduler
         });
     };
 };
