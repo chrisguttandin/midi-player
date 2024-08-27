@@ -1,9 +1,9 @@
 import { TMidiFileSlicerFactory, TMidiPlayerFactory } from '.';
-import { createStartScheduler } from '../factories/start-scheduler';
+import { createStartIntervalScheduler } from '../factories/start-interval-scheduler';
 import { createStartTimeoutScheduler } from '../factories/start-timeout-scheduler';
 
 export type TMidiPlayerFactoryFactory = (
     createMidiFileSlicer: TMidiFileSlicerFactory,
-    startScheduler: ReturnType<typeof createStartScheduler>,
+    startIntervalScheduler: ReturnType<typeof createStartIntervalScheduler>,
     startTimeoutScheduler: ReturnType<typeof createStartTimeoutScheduler>
 ) => TMidiPlayerFactory;

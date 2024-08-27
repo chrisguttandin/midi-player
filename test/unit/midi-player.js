@@ -12,14 +12,14 @@ describe('MidiPlayer', () => {
     let midiPlayer;
     let next;
     let sequence;
-    let startScheduler;
+    let startIntervalScheduler;
     let startTimeoutScheduler;
     let stopScheduler;
 
     beforeEach(() => {
         encodeMidiMessage = stub();
         filterMidiMessage = stub();
-        startScheduler = stub();
+        startIntervalScheduler = stub();
         startTimeoutScheduler = stub();
         stopScheduler = spy();
 
@@ -33,7 +33,7 @@ describe('MidiPlayer', () => {
             json,
             midiFileSlicer: midiFileSlicerMock,
             midiOutput: midiOutputMock,
-            startScheduler,
+            startIntervalScheduler,
             startTimeoutScheduler
         });
 
@@ -47,7 +47,7 @@ describe('MidiPlayer', () => {
         encodeMidiMessage.returns(sequence);
         filterMidiMessage.returns(true);
         performanceMock.now.returns(200);
-        startScheduler.callsFake((...args) => {
+        startIntervalScheduler.callsFake((...args) => {
             [next] = args;
 
             const start = performanceMock.now();
@@ -193,8 +193,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -238,8 +238,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -284,8 +284,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -375,7 +375,7 @@ describe('MidiPlayer', () => {
                 filterMidiMessage.resetHistory();
                 midiFileSlicerMock.slice.resetHistory();
                 midiOutputMock.send.resetHistory();
-                startScheduler.resetHistory();
+                startIntervalScheduler.resetHistory();
                 stopScheduler.resetHistory();
             });
 
@@ -393,8 +393,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -438,8 +438,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -484,8 +484,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -569,15 +569,15 @@ describe('MidiPlayer', () => {
                     filterMidiMessage.resetHistory();
                     midiFileSlicerMock.slice.resetHistory();
                     midiOutputMock.send.resetHistory();
-                    startScheduler.resetHistory();
+                    startIntervalScheduler.resetHistory();
                     stopScheduler.resetHistory();
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
@@ -632,7 +632,7 @@ describe('MidiPlayer', () => {
                     filterMidiMessage.resetHistory();
                     midiFileSlicerMock.slice.resetHistory();
                     midiOutputMock.send.resetHistory();
-                    startScheduler.resetHistory();
+                    startIntervalScheduler.resetHistory();
                     stopScheduler.resetHistory();
 
                     midiFileSlicerMock.slice.returns([{ event, time: 0 }]);
@@ -641,8 +641,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(1000, 2000);
@@ -698,7 +698,7 @@ describe('MidiPlayer', () => {
                     filterMidiMessage.resetHistory();
                     midiFileSlicerMock.slice.resetHistory();
                     midiOutputMock.send.resetHistory();
-                    startScheduler.resetHistory();
+                    startIntervalScheduler.resetHistory();
                     stopScheduler.resetHistory();
 
                     midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
@@ -707,8 +707,8 @@ describe('MidiPlayer', () => {
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
-                    expect(startScheduler).to.have.been.calledOnce;
-                    expect(startScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledOnce;
+                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
                     expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(1000, 2000);

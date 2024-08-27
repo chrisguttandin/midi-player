@@ -1,25 +1,25 @@
 import { spy, stub } from 'sinon';
-import { createStartScheduler } from '../../../src/factories/start-scheduler';
+import { createStartIntervalScheduler } from '../../../src/factories/start-interval-scheduler';
 
-describe('createStartScheduler()', () => {
+describe('createStartIntervalScheduler()', () => {
     let clearInterval;
-    let startScheduler;
     let performance;
     let setInterval;
+    let startIntervalScheduler;
 
     beforeEach(() => {
         clearInterval = spy();
         performance = { now: stub() };
         setInterval = stub();
 
-        startScheduler = createStartScheduler(clearInterval, performance, setInterval);
+        startIntervalScheduler = createStartIntervalScheduler(clearInterval, performance, setInterval);
     });
 
     it('should return a function', () => {
-        expect(startScheduler).to.be.a('function');
+        expect(startIntervalScheduler).to.be.a('function');
     });
 
-    describe('startScheduler()', () => {
+    describe('startIntervalScheduler()', () => {
         let handler;
         let intervalId;
         let next;
@@ -36,26 +36,26 @@ describe('createStartScheduler()', () => {
         });
 
         it('should call performance.now()', () => {
-            startScheduler(next);
+            startIntervalScheduler(next);
 
             expect(performance.now).to.have.been.calledOnceWithExactly();
         });
 
         it('should call setInterval()', () => {
-            startScheduler(next);
+            startIntervalScheduler(next);
 
             expect(setInterval).to.have.been.calledOnceWithExactly(handler, 50);
             expect(handler).to.be.a('function');
         });
 
         it('should call next()', () => {
-            startScheduler(next);
+            startIntervalScheduler(next);
 
             expect(next).to.have.been.calledOnceWithExactly({ end: 4000, start: 3000 });
         });
 
         it('should not call next() when invoking the handler within the interval', () => {
-            startScheduler(next);
+            startIntervalScheduler(next);
 
             next.resetHistory();
             performance.now.resetHistory();
@@ -68,7 +68,7 @@ describe('createStartScheduler()', () => {
         });
 
         it('should call next() when invoking the handler after the interval', () => {
-            startScheduler(next);
+            startIntervalScheduler(next);
 
             next.resetHistory();
             performance.now.resetHistory();
@@ -81,7 +81,7 @@ describe('createStartScheduler()', () => {
         });
 
         it('should return an array with two functions', () => {
-            const array = startScheduler(next);
+            const array = startIntervalScheduler(next);
 
             expect(array.length).to.equal(2);
 
@@ -95,7 +95,7 @@ describe('createStartScheduler()', () => {
             let peekScheduler;
 
             beforeEach(() => {
-                [peekScheduler] = startScheduler(next);
+                [peekScheduler] = startIntervalScheduler(next);
 
                 performance.now.resetHistory();
                 performance.now.returns(4000);
@@ -116,7 +116,7 @@ describe('createStartScheduler()', () => {
             let stopScheduler;
 
             beforeEach(() => {
-                [, stopScheduler] = startScheduler(next);
+                [, stopScheduler] = startIntervalScheduler(next);
             });
 
             it('should call clearInterval()', () => {

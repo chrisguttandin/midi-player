@@ -1,11 +1,11 @@
-import type { createStartScheduler } from '../factories/start-scheduler';
+import type { createStartIntervalScheduler } from '../factories/start-interval-scheduler';
 
 export interface IState {
     endedTracks: number;
 
     offset: number;
 
-    stopScheduler: null | ReturnType<ReturnType<typeof createStartScheduler>>;
+    stopScheduler: null | ReturnType<ReturnType<typeof createStartIntervalScheduler>>;
 
     resolve(): void;
 }

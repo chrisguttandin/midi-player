@@ -1,6 +1,6 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { IMidiFile, TMidiEvent } from 'midi-json-parser-worker';
-import { createStartScheduler } from './factories/start-scheduler';
+import { createStartIntervalScheduler } from './factories/start-interval-scheduler';
 import { createStartTimeoutScheduler } from './factories/start-timeout-scheduler';
 import { IMidiOutput, IMidiPlayer, IMidiPlayerOptions } from './interfaces';
 import { TState } from './types';
@@ -18,7 +18,7 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _midiOutput: IMidiOutput;
 
-    private _startScheduler: ReturnType<typeof createStartScheduler>;
+    private _startIntervalScheduler: ReturnType<typeof createStartIntervalScheduler>;
 
     private _startTimeoutScheduler: ReturnType<typeof createStartTimeoutScheduler>;
 
@@ -30,7 +30,7 @@ export class MidiPlayer implements IMidiPlayer {
         json,
         midiFileSlicer,
         midiOutput,
-        startScheduler,
+        startIntervalScheduler,
         startTimeoutScheduler
     }: IMidiPlayerOptions) {
         this._encodeMidiMessage = encodeMidiMessage;
@@ -38,7 +38,7 @@ export class MidiPlayer implements IMidiPlayer {
         this._json = json;
         this._midiFileSlicer = midiFileSlicer;
         this._midiOutput = midiOutput;
-        this._startScheduler = startScheduler;
+        this._startIntervalScheduler = startIntervalScheduler;
         this._startTimeoutScheduler = startTimeoutScheduler;
         this._state = null;
     }
@@ -105,7 +105,7 @@ export class MidiPlayer implements IMidiPlayer {
 
     private _schedule(endedTracks: number, offset: number): Promise<void> {
         return new Promise((resolve) => {
-            const [peekScheduler, stopScheduler] = this._startScheduler(({ end, start }) => {
+            const [peekScheduler, stopScheduler] = this._startIntervalScheduler(({ end, start }) => {
                 if (this._state === null) {
                     this._state = { endedTracks, offset: start - offset, resolve, peekScheduler: null, stopScheduler: null };
                 }

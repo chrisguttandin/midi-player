@@ -2,7 +2,7 @@ import { IInterval } from '../interfaces';
 
 const INTERVAL = 500;
 
-export const createStartScheduler =
+export const createStartIntervalScheduler =
     (clearInterval: Window['clearInterval'], performance: Window['performance'], setInterval: Window['setInterval']) =>
     (next: (interval: IInterval) => void) => {
         const start = performance.now();

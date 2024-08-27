@@ -1,13 +1,13 @@
 import { MidiFileSlicer } from 'midi-file-slicer';
 import { TMidiEvent } from 'midi-json-parser-worker';
-import { createStartScheduler } from '../factories/start-scheduler';
+import { createStartIntervalScheduler } from '../factories/start-interval-scheduler';
 import { createStartTimeoutScheduler } from '../factories/start-timeout-scheduler';
 import { IMidiPlayerFactoryOptions } from './midi-player-factory-options';
 
 export interface IMidiPlayerOptions extends Required<IMidiPlayerFactoryOptions> {
     midiFileSlicer: MidiFileSlicer;
 
-    startScheduler: ReturnType<typeof createStartScheduler>;
+    startIntervalScheduler: ReturnType<typeof createStartIntervalScheduler>;
 
     startTimeoutScheduler: ReturnType<typeof createStartTimeoutScheduler>;
 

@@ -1,4 +1,4 @@
-import type { createStartScheduler } from '../factories/start-scheduler';
+import type { createStartIntervalScheduler } from '../factories/start-interval-scheduler';
 
 export type TState =
     | {
@@ -19,7 +19,7 @@ export type TState =
 
           peekScheduler: null;
 
-          stopScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[1];
+          stopScheduler: ReturnType<ReturnType<typeof createStartIntervalScheduler>>[1];
 
           resolve(): void;
       }
@@ -28,9 +28,9 @@ export type TState =
 
           offset: number;
 
-          peekScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[0];
+          peekScheduler: ReturnType<ReturnType<typeof createStartIntervalScheduler>>[0];
 
-          stopScheduler: ReturnType<ReturnType<typeof createStartScheduler>>[1];
+          stopScheduler: ReturnType<ReturnType<typeof createStartIntervalScheduler>>[1];
 
           resolve(): void;
       };
