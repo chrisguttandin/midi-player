@@ -35,9 +35,6 @@ const midiAccess = await navigator.requestMIDIAccess();
 const midiOutput = Array.from(midiAccess.outputs)[0];
 
 const midiPlayer = create({ json, midiOutput });
-
-// All MIDI messages have been sent when the promise returned by play() resolves.
-await midiPlayer.play();
 ```
 
 By default only control change, note off, note on and program change events will be sent. But it's possible to provide a custom filter function. The following player will only send note off and note on events.
@@ -50,3 +47,63 @@ const midiPlayer = create({
 ```
 
 If you want to play a binary MIDI file you can use the [midi-json-parser](https://github.com/chrisguttandin/midi-json-parser) package to transform it into a compatible JSON representation.
+
+### position
+
+The `position` is set to the current `position` in milliseconds.
+
+```js
+midiPlayer.position;
+```
+
+### state
+
+The `state` property will either be set to `'paused'`, `'playing'`, or `'stopped'`.
+
+```js
+midiPlayer.state;
+```
+
+### play()
+
+Calling `play()` will initiate the playback from the start.
+
+```js
+midiPlayer.play().then(() => {
+    // All MIDI messages have been sent when the promise returned by play() resolves.
+});
+```
+
+It can only be called when the `state` of the player is `'stopped'`.
+
+### pause()
+
+Calling `pause()` will pause the playback at the current `position`.
+
+```js
+midiPlayer.pause();
+```
+
+It can only be called when the `state` of the player is `'playing'`.
+
+### resume()
+
+Calling `resume()` will resume a previously paused playback at the current `position`.
+
+```js
+midiPlayer.resume().then(() => {
+    // All MIDI messages have been sent when the promise returned by resume() resolves.
+});
+```
+
+It can only be called when the `state` of the player is `'paused'`.
+
+### stop()
+
+Calling `stop()` will stop the player.
+
+```js
+midiPlayer.stop();
+```
+
+It can only be called when the `state` of the player is not `'stopped'`.
