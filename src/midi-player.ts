@@ -95,7 +95,9 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is already stopped.');
         }
 
-        if (this._state.stopScheduler !== null) {
+        if (this._state.stopScheduler === null) {
+            this._state = null;
+        } else {
             this._clear();
             this._stop(this._state);
         }
