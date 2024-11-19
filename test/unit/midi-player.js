@@ -367,8 +367,6 @@ describe('MidiPlayer', () => {
             beforeEach(() => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
-                midiPlayer.play();
-
                 performanceMock.now.returns(1200);
 
                 encodeMidiMessage.resetHistory();
