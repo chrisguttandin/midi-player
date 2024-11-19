@@ -62,9 +62,16 @@ export class MidiPlayer implements IMidiPlayer {
 
         this._clear();
 
-        const { resolve, peekScheduler, stopScheduler } = this._state;
+        const { endOfTrackEventTimes, resolve, peekScheduler, stopScheduler } = this._state;
+        const positionWithOffset = peekScheduler();
 
-        this._state = { ...this._state, offset: peekScheduler() - this._state.offset, peekScheduler: null, stopScheduler: null };
+        this._state = {
+            ...this._state,
+            endOfTrackEventTimes: endOfTrackEventTimes.filter((time) => time < positionWithOffset),
+            offset: positionWithOffset - this._state.offset,
+            peekScheduler: null,
+            stopScheduler: null
+        };
 
         stopScheduler();
         resolve();
@@ -75,7 +82,7 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is not stopped.');
         }
 
-        return this._schedule(0, 0);
+        return this._schedule([], 0);
     }
 
     public resume(): Promise<void> {
@@ -83,11 +90,11 @@ export class MidiPlayer implements IMidiPlayer {
             throw new Error('The player is not paused.');
         }
 
-        const { endedTracks, offset } = this._state;
+        const { endOfTrackEventTimes, offset } = this._state;
 
         this._state = null;
 
-        return this._schedule(endedTracks, offset);
+        return this._schedule(endOfTrackEventTimes, offset);
     }
 
     public stop(): void {
@@ -109,11 +116,11 @@ export class MidiPlayer implements IMidiPlayer {
         ALL_SOUND_OFF_EVENT_DATA.forEach((data) => this._midiOutput.send(data));
     }
 
-    private _schedule(endedTracks: number, offset: number): Promise<void> {
+    private _schedule(endOfTrackEventTimes: number[], offset: number): Promise<void> {
         return new Promise((resolve) => {
             const [peekScheduler, stopScheduler] = this._startIntervalScheduler(({ end, start }) => {
                 if (this._state === null) {
-                    this._state = { endedTracks, offset: start - offset, resolve, peekScheduler: null, stopScheduler: null };
+                    this._state = { endOfTrackEventTimes, offset: start - offset, resolve, peekScheduler: null, stopScheduler: null };
                 }
 
                 const events = this._midiFileSlicer.slice(start - this._state.offset, end - this._state.offset);
@@ -122,13 +129,14 @@ export class MidiPlayer implements IMidiPlayer {
                     .filter(({ event }) => this._filterMidiMessage(event))
                     .forEach(({ event, time }) => this._midiOutput.send(this._encodeMidiMessage(event), start + time));
 
-                const endOfTrackEvents = events.filter(({ event }) => MidiPlayer._isEndOfTrack(event));
+                const newEndOfTrackEventTimes = events
+                    .filter(({ event }) => MidiPlayer._isEndOfTrack(event))
+                    .map(({ time }) => start + time);
 
-                this._state.endedTracks += endOfTrackEvents.length;
+                this._state.endOfTrackEventTimes.push(...newEndOfTrackEventTimes);
 
-                if (this._state.endedTracks === this._json.tracks.length) {
-                    const timeout =
-                        start + Math.max(...endOfTrackEvents.map(({ time }) => time)) - (this._state.peekScheduler?.() ?? start);
+                if (this._state.endOfTrackEventTimes.length === this._json.tracks.length) {
+                    const timeout = Math.max(...newEndOfTrackEventTimes) - (this._state.peekScheduler?.() ?? start);
 
                     if (timeout > 0) {
                         this._state.stopScheduler?.();

@@ -2,7 +2,7 @@ import type { createStartIntervalScheduler } from '../factories/start-interval-s
 
 export type TState =
     | {
-          endedTracks: number;
+          endOfTrackEventTimes: number[];
 
           offset: number;
 
@@ -13,7 +13,7 @@ export type TState =
           resolve(): void;
       }
     | {
-          endedTracks: number;
+          endOfTrackEventTimes: number[];
 
           offset: number;
 
@@ -24,7 +24,7 @@ export type TState =
           resolve(): void;
       }
     | {
-          endedTracks: number;
+          endOfTrackEventTimes: number[];
 
           offset: number;
 
