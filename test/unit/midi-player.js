@@ -167,8 +167,6 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
-
-                performanceMock.now.returns(1200);
             });
 
             it('should throw an error', () => {
@@ -750,8 +748,6 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
-
-                performanceMock.now.returns(1200);
             });
 
             it('should throw an error', () => {
@@ -886,8 +882,6 @@ describe('MidiPlayer', () => {
                 midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
-
-                performanceMock.now.returns(1200);
             });
 
             it('should throw an error', () => {
