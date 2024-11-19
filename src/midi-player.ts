@@ -44,7 +44,11 @@ export class MidiPlayer implements IMidiPlayer {
     }
 
     public get position(): null | number {
-        return this._state === null ? 0 : this._state.offset + (this._state.peekScheduler?.() ?? 0);
+        return this._state === null
+            ? 0
+            : this._state.peekScheduler === null
+              ? this._state.offset
+              : this._state.peekScheduler() - this._state.offset;
     }
 
     public get state(): 'paused' | 'playing' | 'stopped' {
@@ -60,7 +64,7 @@ export class MidiPlayer implements IMidiPlayer {
 
         const { resolve, peekScheduler, stopScheduler } = this._state;
 
-        this._state = { ...this._state, offset: peekScheduler(), peekScheduler: null, stopScheduler: null };
+        this._state = { ...this._state, offset: peekScheduler() - this._state.offset, peekScheduler: null, stopScheduler: null };
 
         stopScheduler();
         resolve();

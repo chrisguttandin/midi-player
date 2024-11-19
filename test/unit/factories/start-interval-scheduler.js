@@ -107,8 +107,8 @@ describe('createStartIntervalScheduler()', () => {
                 expect(performance.now).to.have.been.calledOnceWithExactly();
             });
 
-            it('should return the elapsed time', () => {
-                expect(peekScheduler()).to.equal(1000);
+            it('should return the time returned by performance.now()', () => {
+                expect(peekScheduler()).to.equal(4000);
             });
         });
 

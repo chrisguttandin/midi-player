@@ -54,12 +54,100 @@ describe('MidiPlayer', () => {
 
             next({ end: start + 1000, start });
 
-            return [() => performanceMock.now() - start, stopScheduler];
+            return [() => performanceMock.now(), stopScheduler];
         });
         startTimeoutScheduler.callsFake((...args) => {
             [handler] = args;
 
             return stopScheduler;
+        });
+    });
+
+    describe('position', () => {
+        describe('when not playing', () => {
+            it('should return zero', () => {
+                expect(midiPlayer.position).to.equal(0);
+            });
+        });
+
+        describe('when playing', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([
+                    {
+                        event: {
+                            noteOn: 'a fake note on event'
+                        },
+                        time: 500
+                    }
+                ]);
+
+                midiPlayer.play();
+            });
+
+            describe('without any elapsed time', () => {
+                it('should return zero', () => {
+                    expect(midiPlayer.position).to.equal(0);
+                });
+            });
+
+            describe('after 500 milliseconds', () => {
+                beforeEach(() => {
+                    performanceMock.now.returns(500);
+                });
+
+                it('should return the elapsed time', () => {
+                    expect(midiPlayer.position).to.equal(300);
+                });
+            });
+        });
+
+        describe('when paused', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([
+                    {
+                        event: {
+                            noteOn: 'a fake note on event'
+                        },
+                        time: 500
+                    }
+                ]);
+
+                midiPlayer.play();
+            });
+
+            describe('without any elapsed time', () => {
+                beforeEach(() => {
+                    midiPlayer.pause();
+                });
+
+                it('should return zero', () => {
+                    expect(midiPlayer.position).to.equal(0);
+                });
+            });
+
+            describe('after 500 milliseconds', () => {
+                beforeEach(() => {
+                    performanceMock.now.returns(500);
+
+                    midiPlayer.pause();
+                });
+
+                it('should return the elapsed time', () => {
+                    expect(midiPlayer.position).to.equal(300);
+                });
+            });
+        });
+
+        describe('when ended', () => {
+            beforeEach(() => {
+                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+
+                midiPlayer.play();
+            });
+
+            it('should return zero', () => {
+                expect(midiPlayer.position).to.equal(0);
+            });
         });
     });
 
