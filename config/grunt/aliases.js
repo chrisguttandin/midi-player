@@ -13,7 +13,7 @@ module.exports = {
         ...filter(
             isType('expectation'),
             ...filter(isTarget('chrome'), 'sh:test-expectation-chrome'),
-            ...filter(isTarget(), 'sh:test-expectation-chrome-canary')
+            ...filter(isTarget('chrome-canary'), 'sh:test-expectation-chrome-canary')
         ),
         ...filter(isType('unit'), 'sh:test-unit')
     ]
