@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 describe('MIDIOutput', () => {
     describe('clear()', () => {
         // #1 https://issues.chromium.org/issues/40411677

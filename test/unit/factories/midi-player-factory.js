@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createMidiPlayerFactory } from '../../../src/factories/midi-player-factory';
 import { spy } from 'sinon';
 

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { encodeMidiMessage } from '../../../src/helpers/encode-midi-message';
 
 describe('encodeMidiMessage()', () => {

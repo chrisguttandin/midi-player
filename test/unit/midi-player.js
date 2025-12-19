@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { spy, stub } from 'sinon';
 import { MidiPlayer } from '../../src/midi-player';
 import { midiFileSlicerMock } from '../mock/midi-file-slicer';
