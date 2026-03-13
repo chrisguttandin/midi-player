@@ -1,6 +1,6 @@
-import { stub } from 'sinon';
+import { vi } from 'vitest';
 
 export const midiOutputMock = {
-    clear: stub(),
-    send: stub()
+    clear: vi.fn(),
+    send: vi.fn()
 };

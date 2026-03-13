@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { spy, stub } from 'sinon';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MidiPlayer } from '../../src/midi-player';
 import { midiFileSlicerMock } from '../mock/midi-file-slicer';
 import { midiOutputMock } from '../mock/midi-output';
@@ -18,11 +17,11 @@ describe('MidiPlayer', () => {
     let stopScheduler;
 
     beforeEach(() => {
-        encodeMidiMessage = stub();
-        filterMidiMessage = stub();
-        startIntervalScheduler = stub();
-        startTimeoutScheduler = stub();
-        stopScheduler = spy();
+        encodeMidiMessage = vi.fn();
+        filterMidiMessage = vi.fn();
+        startIntervalScheduler = vi.fn();
+        startTimeoutScheduler = vi.fn();
+        stopScheduler = vi.fn();
 
         json = {
             tracks: ['a fake track']
@@ -40,15 +39,15 @@ describe('MidiPlayer', () => {
 
         sequence = 'a fake sequence';
 
-        midiFileSlicerMock.slice.resetHistory();
-        midiOutputMock.clear.resetHistory();
-        midiOutputMock.send.resetHistory();
-        performanceMock.now.resetHistory();
+        midiFileSlicerMock.slice.mockClear();
+        midiOutputMock.clear.mockClear();
+        midiOutputMock.send.mockClear();
+        performanceMock.now.mockClear();
 
-        encodeMidiMessage.returns(sequence);
-        filterMidiMessage.returns(true);
-        performanceMock.now.returns(200);
-        startIntervalScheduler.callsFake((...args) => {
+        encodeMidiMessage.mockReturnValue(sequence);
+        filterMidiMessage.mockReturnValue(true);
+        performanceMock.now.mockReturnValue(200);
+        startIntervalScheduler.mockImplementation((...args) => {
             [next] = args;
 
             const start = performanceMock.now();
@@ -57,7 +56,7 @@ describe('MidiPlayer', () => {
 
             return [() => performanceMock.now(), stopScheduler];
         });
-        startTimeoutScheduler.callsFake((...args) => {
+        startTimeoutScheduler.mockImplementation((...args) => {
             [handler] = args;
 
             return stopScheduler;
@@ -73,7 +72,7 @@ describe('MidiPlayer', () => {
 
         describe('when playing', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -93,7 +92,7 @@ describe('MidiPlayer', () => {
 
             describe('after 500 milliseconds', () => {
                 beforeEach(() => {
-                    performanceMock.now.returns(500);
+                    performanceMock.now.mockReturnValue(500);
                 });
 
                 it('should return the elapsed time', () => {
@@ -104,7 +103,7 @@ describe('MidiPlayer', () => {
 
         describe('when paused', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -128,7 +127,7 @@ describe('MidiPlayer', () => {
 
             describe('after 500 milliseconds', () => {
                 beforeEach(() => {
-                    performanceMock.now.returns(500);
+                    performanceMock.now.mockReturnValue(500);
 
                     midiPlayer.pause();
                 });
@@ -141,7 +140,7 @@ describe('MidiPlayer', () => {
 
         describe('when ended', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiFileSlicerMock.slice.mockReturnValue([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
             });
@@ -163,9 +162,9 @@ describe('MidiPlayer', () => {
             let then;
 
             beforeEach(() => {
-                then = spy();
+                then = vi.fn();
 
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -176,44 +175,44 @@ describe('MidiPlayer', () => {
 
                 midiPlayer.play().then(then);
 
-                midiOutputMock.clear.resetHistory();
-                midiOutputMock.send.resetHistory();
+                midiOutputMock.clear.mockClear();
+                midiOutputMock.send.mockClear();
             });
 
             it('should call clear() on the midiOutput', () => {
                 midiPlayer.pause();
 
                 expect(midiOutputMock.clear).to.have.been.calledOnce;
-                expect(midiOutputMock.clear).to.have.been.calledWithExactly();
+                expect(midiOutputMock.clear).to.have.been.calledWith();
             });
 
             it('should call send() on the midiOutput', () => {
                 midiPlayer.pause();
 
                 expect(midiOutputMock.send).to.have.been.callCount(16);
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([176, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([177, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([178, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([179, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([180, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([181, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([182, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([183, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([184, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([185, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([186, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([187, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([188, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([189, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([190, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([191, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([176, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([177, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([178, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([179, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([180, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([181, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([182, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([183, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([184, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([185, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([186, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([187, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([188, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([189, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([190, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([191, 120, 0]));
             });
 
             it('should call stopScheduler()', () => {
                 midiPlayer.pause();
 
                 expect(stopScheduler).to.have.been.calledOnce;
-                expect(stopScheduler).to.have.been.calledWithExactly();
+                expect(stopScheduler).to.have.been.calledWith();
             });
 
             it('should return undefined', () => {
@@ -233,7 +232,7 @@ describe('MidiPlayer', () => {
 
         describe('when paused', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -253,7 +252,7 @@ describe('MidiPlayer', () => {
 
         describe('when ended', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiFileSlicerMock.slice.mockReturnValue([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
             });
@@ -274,26 +273,26 @@ describe('MidiPlayer', () => {
                         noteOn: 'a fake note on event'
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 700);
 
                     expect(stopScheduler).to.have.not.been.called;
 
@@ -301,7 +300,7 @@ describe('MidiPlayer', () => {
                 });
 
                 it('should return an unresolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -319,35 +318,35 @@ describe('MidiPlayer', () => {
                         endOfTrack: true
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 0 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 0 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 200);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 200);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.not.been.called;
                 });
 
                 it('should return a resolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -365,36 +364,36 @@ describe('MidiPlayer', () => {
                         endOfTrack: true
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 700);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.been.calledOnce;
-                    expect(startTimeoutScheduler).to.have.been.calledWithExactly(handler, 500);
+                    expect(startTimeoutScheduler).to.have.been.calledWith(handler, 500);
                 });
 
                 it('should return a promise which resolves when the handler gets called', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -413,7 +412,7 @@ describe('MidiPlayer', () => {
 
         describe('when playing', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -432,7 +431,7 @@ describe('MidiPlayer', () => {
 
         describe('when paused', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -452,16 +451,16 @@ describe('MidiPlayer', () => {
 
         describe('when ended', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiFileSlicerMock.slice.mockReturnValue([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
-                performanceMock.now.returns(1200);
+                performanceMock.now.mockReturnValue(1200);
 
-                encodeMidiMessage.resetHistory();
-                filterMidiMessage.resetHistory();
-                midiFileSlicerMock.slice.resetHistory();
-                midiOutputMock.send.resetHistory();
-                startIntervalScheduler.resetHistory();
-                stopScheduler.resetHistory();
+                encodeMidiMessage.mockClear();
+                filterMidiMessage.mockClear();
+                midiFileSlicerMock.slice.mockClear();
+                midiOutputMock.send.mockClear();
+                startIntervalScheduler.mockClear();
+                stopScheduler.mockClear();
             });
 
             describe('with a song not ending within the next interval', () => {
@@ -472,26 +471,26 @@ describe('MidiPlayer', () => {
                         noteOn: 'a fake note on event'
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 1700);
 
                     expect(stopScheduler).to.have.not.been.called;
 
@@ -499,7 +498,7 @@ describe('MidiPlayer', () => {
                 });
 
                 it('should return an unresolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -517,35 +516,35 @@ describe('MidiPlayer', () => {
                         endOfTrack: true
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 0 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 0 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1200);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 1200);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.not.been.called;
                 });
 
                 it('should return a resolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -563,36 +562,36 @@ describe('MidiPlayer', () => {
                         endOfTrack: true
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.play();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 1700);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.been.calledOnce;
-                    expect(startTimeoutScheduler).to.have.been.calledWithExactly(handler, 500);
+                    expect(startTimeoutScheduler).to.have.been.calledWith(handler, 500);
                 });
 
                 it('should return a promise which resolves when the handler gets called', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.play().then(then);
 
@@ -619,7 +618,7 @@ describe('MidiPlayer', () => {
 
         describe('when playing', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -645,36 +644,36 @@ describe('MidiPlayer', () => {
                         noteOn: 'another fake note on event'
                     };
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
 
                     midiPlayer.play();
                     midiPlayer.pause();
 
-                    encodeMidiMessage.resetHistory();
-                    filterMidiMessage.resetHistory();
-                    midiFileSlicerMock.slice.resetHistory();
-                    midiOutputMock.send.resetHistory();
-                    startIntervalScheduler.resetHistory();
-                    stopScheduler.resetHistory();
+                    encodeMidiMessage.mockClear();
+                    filterMidiMessage.mockClear();
+                    midiFileSlicerMock.slice.mockClear();
+                    midiOutputMock.send.mockClear();
+                    startIntervalScheduler.mockClear();
+                    stopScheduler.mockClear();
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(0, 1000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(0, 1000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 700);
 
                     expect(stopScheduler).to.have.not.been.called;
 
@@ -682,7 +681,7 @@ describe('MidiPlayer', () => {
                 });
 
                 it('should return an unresolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.resume().then(then);
 
@@ -698,7 +697,7 @@ describe('MidiPlayer', () => {
                 beforeEach(() => {
                     event = { endOfTrack: true };
 
-                    midiFileSlicerMock.slice.returns([
+                    midiFileSlicerMock.slice.mockReturnValue([
                         {
                             event: {
                                 noteOn: 'another fake note on event'
@@ -709,46 +708,46 @@ describe('MidiPlayer', () => {
 
                     midiPlayer.play();
 
-                    performanceMock.now.returns(1200);
+                    performanceMock.now.mockReturnValue(1200);
 
                     midiPlayer.pause();
 
-                    encodeMidiMessage.resetHistory();
-                    filterMidiMessage.resetHistory();
-                    midiFileSlicerMock.slice.resetHistory();
-                    midiOutputMock.send.resetHistory();
-                    startIntervalScheduler.resetHistory();
-                    stopScheduler.resetHistory();
+                    encodeMidiMessage.mockClear();
+                    filterMidiMessage.mockClear();
+                    midiFileSlicerMock.slice.mockClear();
+                    midiOutputMock.send.mockClear();
+                    startIntervalScheduler.mockClear();
+                    stopScheduler.mockClear();
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 0 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 0 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(1000, 2000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(1000, 2000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1200);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 1200);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.not.been.called;
                 });
 
                 it('should return a resolved promise', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.resume().then(then);
 
@@ -764,7 +763,7 @@ describe('MidiPlayer', () => {
                 beforeEach(() => {
                     event = { endOfTrack: true };
 
-                    midiFileSlicerMock.slice.returns([
+                    midiFileSlicerMock.slice.mockReturnValue([
                         {
                             event: {
                                 noteOn: 'another fake note on event'
@@ -775,47 +774,47 @@ describe('MidiPlayer', () => {
 
                     midiPlayer.play();
 
-                    performanceMock.now.returns(1200);
+                    performanceMock.now.mockReturnValue(1200);
 
                     midiPlayer.pause();
 
-                    encodeMidiMessage.resetHistory();
-                    filterMidiMessage.resetHistory();
-                    midiFileSlicerMock.slice.resetHistory();
-                    midiOutputMock.send.resetHistory();
-                    startIntervalScheduler.resetHistory();
-                    stopScheduler.resetHistory();
+                    encodeMidiMessage.mockClear();
+                    filterMidiMessage.mockClear();
+                    midiFileSlicerMock.slice.mockClear();
+                    midiOutputMock.send.mockClear();
+                    startIntervalScheduler.mockClear();
+                    stopScheduler.mockClear();
 
-                    midiFileSlicerMock.slice.returns([{ event, time: 500 }]);
+                    midiFileSlicerMock.slice.mockReturnValue([{ event, time: 500 }]);
                 });
 
                 it('should schedule all events up to the lookahead', () => {
                     midiPlayer.resume();
 
                     expect(startIntervalScheduler).to.have.been.calledOnce;
-                    expect(startIntervalScheduler).to.have.been.calledWithExactly(next);
+                    expect(startIntervalScheduler).to.have.been.calledWith(next);
 
                     expect(midiFileSlicerMock.slice).to.have.been.calledOnce;
-                    expect(midiFileSlicerMock.slice).to.have.been.calledWithExactly(1000, 2000);
+                    expect(midiFileSlicerMock.slice).to.have.been.calledWith(1000, 2000);
 
                     expect(filterMidiMessage).to.have.been.calledOnce;
-                    expect(filterMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(filterMidiMessage).to.have.been.calledWith(event);
 
                     expect(encodeMidiMessage).to.have.been.calledOnce;
-                    expect(encodeMidiMessage).to.have.been.calledWithExactly(event);
+                    expect(encodeMidiMessage).to.have.been.calledWith(event);
 
                     expect(midiOutputMock.send).to.have.been.calledOnce;
-                    expect(midiOutputMock.send).to.have.been.calledWithExactly(sequence, 1700);
+                    expect(midiOutputMock.send).to.have.been.calledWith(sequence, 1700);
 
                     expect(stopScheduler).to.have.been.calledOnce;
-                    expect(stopScheduler).to.have.been.calledWithExactly();
+                    expect(stopScheduler).to.have.been.calledWith();
 
                     expect(startTimeoutScheduler).to.have.been.calledOnce;
-                    expect(startTimeoutScheduler).to.have.been.calledWithExactly(handler, 500);
+                    expect(startTimeoutScheduler).to.have.been.calledWith(handler, 500);
                 });
 
                 it('should return a promise which resolves when the handler gets called', async () => {
-                    const then = spy();
+                    const then = vi.fn();
 
                     midiPlayer.resume().then(then);
 
@@ -834,7 +833,7 @@ describe('MidiPlayer', () => {
 
         describe('when ended', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiFileSlicerMock.slice.mockReturnValue([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
             });
@@ -856,9 +855,9 @@ describe('MidiPlayer', () => {
             let then;
 
             beforeEach(() => {
-                then = spy();
+                then = vi.fn();
 
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -869,44 +868,44 @@ describe('MidiPlayer', () => {
 
                 midiPlayer.play().then(then);
 
-                midiOutputMock.clear.resetHistory();
-                midiOutputMock.send.resetHistory();
+                midiOutputMock.clear.mockClear();
+                midiOutputMock.send.mockClear();
             });
 
             it('should call clear() on the midiOutput', () => {
                 midiPlayer.stop();
 
                 expect(midiOutputMock.clear).to.have.been.calledOnce;
-                expect(midiOutputMock.clear).to.have.been.calledWithExactly();
+                expect(midiOutputMock.clear).to.have.been.calledWith();
             });
 
             it('should call send() on the midiOutput', () => {
                 midiPlayer.stop();
 
                 expect(midiOutputMock.send).to.have.been.callCount(16);
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([176, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([177, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([178, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([179, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([180, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([181, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([182, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([183, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([184, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([185, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([186, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([187, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([188, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([189, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([190, 120, 0]));
-                expect(midiOutputMock.send).to.have.been.calledWithExactly(new Uint8Array([191, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([176, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([177, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([178, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([179, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([180, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([181, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([182, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([183, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([184, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([185, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([186, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([187, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([188, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([189, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([190, 120, 0]));
+                expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([191, 120, 0]));
             });
 
             it('should call stopScheduler()', () => {
                 midiPlayer.stop();
 
                 expect(stopScheduler).to.have.been.calledOnce;
-                expect(stopScheduler).to.have.been.calledWithExactly();
+                expect(stopScheduler).to.have.been.calledWith();
             });
 
             it('should return undefined', () => {
@@ -926,7 +925,7 @@ describe('MidiPlayer', () => {
 
         describe('when paused', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([
+                midiFileSlicerMock.slice.mockReturnValue([
                     {
                         event: {
                             noteOn: 'a fake note on event'
@@ -938,9 +937,9 @@ describe('MidiPlayer', () => {
                 midiPlayer.play();
                 midiPlayer.pause();
 
-                midiOutputMock.clear.resetHistory();
-                midiOutputMock.send.resetHistory();
-                stopScheduler.resetHistory();
+                midiOutputMock.clear.mockClear();
+                midiOutputMock.send.mockClear();
+                stopScheduler.mockClear();
             });
 
             it('should not call clear() on the midiOutput', () => {
@@ -968,7 +967,7 @@ describe('MidiPlayer', () => {
 
         describe('when ended', () => {
             beforeEach(() => {
-                midiFileSlicerMock.slice.returns([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
+                midiFileSlicerMock.slice.mockReturnValue([{ event: { delta: 0, endOfTrack: true }, time: 0 }]);
 
                 midiPlayer.play();
             });

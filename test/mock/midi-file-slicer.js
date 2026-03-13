@@ -1,5 +1,5 @@
-import { stub } from 'sinon';
+import { vi } from 'vitest';
 
 export const midiFileSlicerMock = {
-    slice: stub()
+    slice: vi.fn()
 };

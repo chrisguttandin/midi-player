@@ -1,6 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMidiPlayerFactory } from '../../../src/factories/midi-player-factory';
-import { spy } from 'sinon';
 
 describe('createMidiPlayerFactory()', () => {
     let midiFileSlicerFactory;
@@ -9,7 +8,7 @@ describe('createMidiPlayerFactory()', () => {
     beforeEach(() => {
         const scheduler = 'a fake scheduler';
 
-        midiFileSlicerFactory = spy();
+        midiFileSlicerFactory = vi.fn();
 
         midiPlayerFactory = createMidiPlayerFactory(midiFileSlicerFactory, scheduler);
     });
@@ -25,7 +24,7 @@ describe('createMidiPlayerFactory()', () => {
             midiPlayerFactory({ json });
 
             expect(midiFileSlicerFactory).to.have.been.calledOnce;
-            expect(midiFileSlicerFactory).to.have.been.calledWithExactly(json);
+            expect(midiFileSlicerFactory).to.have.been.calledWith(json);
         });
     });
 });

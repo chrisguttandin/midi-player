@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { spy, stub } from 'sinon';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStartTimeoutScheduler } from '../../../src/factories/start-timeout-scheduler';
 
 describe('createStartTimeoutScheduler()', () => {
@@ -8,8 +7,8 @@ describe('createStartTimeoutScheduler()', () => {
     let startTimeoutScheduler;
 
     beforeEach(() => {
-        clearTimeout = spy();
-        setTimeout = stub();
+        clearTimeout = vi.fn();
+        setTimeout = vi.fn();
 
         startTimeoutScheduler = createStartTimeoutScheduler(clearTimeout, setTimeout);
     });
@@ -27,13 +26,13 @@ describe('createStartTimeoutScheduler()', () => {
             handler = 'a fake handler';
             timeout = 50;
 
-            setTimeout.returns(timeoutId);
+            setTimeout.mockReturnValue(timeoutId);
         });
 
         it('should call setTimeout()', () => {
             startTimeoutScheduler(handler, timeout);
 
-            expect(setTimeout).to.have.been.calledOnceWithExactly(handler, timeout);
+            expect(setTimeout).to.have.been.calledOnceWith(handler, timeout);
         });
 
         it('should return a function', () => {
@@ -50,7 +49,7 @@ describe('createStartTimeoutScheduler()', () => {
             it('should call clearTimeout()', () => {
                 stopScheduler();
 
-                expect(clearTimeout).to.have.been.calledOnceWithExactly(timeoutId);
+                expect(clearTimeout).to.have.been.calledOnceWith(timeoutId);
             });
 
             it('should return undefined', () => {

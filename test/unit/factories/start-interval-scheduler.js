@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { spy, stub } from 'sinon';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStartIntervalScheduler } from '../../../src/factories/start-interval-scheduler';
 
 describe('createStartIntervalScheduler()', () => {
@@ -9,9 +8,9 @@ describe('createStartIntervalScheduler()', () => {
     let startIntervalScheduler;
 
     beforeEach(() => {
-        clearInterval = spy();
-        performance = { now: stub() };
-        setInterval = stub();
+        clearInterval = vi.fn();
+        performance = { now: vi.fn() };
+        setInterval = vi.fn();
 
         startIntervalScheduler = createStartIntervalScheduler(clearInterval, performance, setInterval);
     });
@@ -26,10 +25,10 @@ describe('createStartIntervalScheduler()', () => {
         let next;
 
         beforeEach(() => {
-            next = spy();
+            next = vi.fn();
 
-            performance.now.returns(3000);
-            setInterval.callsFake((...args) => {
+            performance.now.mockReturnValue(3000);
+            setInterval.mockImplementation((...args) => {
                 [handler] = args;
 
                 return intervalId;
@@ -39,46 +38,46 @@ describe('createStartIntervalScheduler()', () => {
         it('should call performance.now()', () => {
             startIntervalScheduler(next);
 
-            expect(performance.now).to.have.been.calledOnceWithExactly();
+            expect(performance.now).to.have.been.calledOnceWith();
         });
 
         it('should call setInterval()', () => {
             startIntervalScheduler(next);
 
-            expect(setInterval).to.have.been.calledOnceWithExactly(handler, 50);
+            expect(setInterval).to.have.been.calledOnceWith(handler, 50);
             expect(handler).to.be.a('function');
         });
 
         it('should call next()', () => {
             startIntervalScheduler(next);
 
-            expect(next).to.have.been.calledOnceWithExactly({ end: 4000, start: 3000 });
+            expect(next).to.have.been.calledOnceWith({ end: 4000, start: 3000 });
         });
 
         it('should not call next() when invoking the handler within the interval', () => {
             startIntervalScheduler(next);
 
-            next.resetHistory();
-            performance.now.resetHistory();
-            performance.now.returns(3400);
+            next.mockClear();
+            performance.now.mockClear();
+            performance.now.mockReturnValue(3400);
 
             handler();
 
             expect(next).to.have.not.been.called;
-            expect(performance.now).to.have.been.calledOnceWithExactly();
+            expect(performance.now).to.have.been.calledOnceWith();
         });
 
         it('should call next() when invoking the handler after the interval', () => {
             startIntervalScheduler(next);
 
-            next.resetHistory();
-            performance.now.resetHistory();
-            performance.now.returns(3500);
+            next.mockClear();
+            performance.now.mockClear();
+            performance.now.mockReturnValue(3500);
 
             handler();
 
-            expect(next).to.have.been.calledOnceWithExactly({ end: 4500, start: 4000 });
-            expect(performance.now).to.have.been.calledOnceWithExactly();
+            expect(next).to.have.been.calledOnceWith({ end: 4500, start: 4000 });
+            expect(performance.now).to.have.been.calledOnceWith();
         });
 
         it('should return an array with two functions', () => {
@@ -98,14 +97,14 @@ describe('createStartIntervalScheduler()', () => {
             beforeEach(() => {
                 [peekScheduler] = startIntervalScheduler(next);
 
-                performance.now.resetHistory();
-                performance.now.returns(4000);
+                performance.now.mockClear();
+                performance.now.mockReturnValue(4000);
             });
 
             it('should call performance.now()', () => {
                 peekScheduler();
 
-                expect(performance.now).to.have.been.calledOnceWithExactly();
+                expect(performance.now).to.have.been.calledOnceWith();
             });
 
             it('should return the time returned by performance.now()', () => {
@@ -123,7 +122,7 @@ describe('createStartIntervalScheduler()', () => {
             it('should call clearInterval()', () => {
                 stopScheduler();
 
-                expect(clearInterval).to.have.been.calledOnceWithExactly(intervalId);
+                expect(clearInterval).to.have.been.calledOnceWith(intervalId);
             });
 
             it('should return undefined', () => {
