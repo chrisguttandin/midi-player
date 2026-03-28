@@ -189,7 +189,7 @@ describe('MidiPlayer', () => {
             it('should call send() on the midiOutput', () => {
                 midiPlayer.pause();
 
-                expect(midiOutputMock.send).to.have.been.callCount(16);
+                expect(midiOutputMock.send.mock.calls.length).to.equal(16);
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([176, 120, 0]));
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([177, 120, 0]));
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([178, 120, 0]));
@@ -882,7 +882,7 @@ describe('MidiPlayer', () => {
             it('should call send() on the midiOutput', () => {
                 midiPlayer.stop();
 
-                expect(midiOutputMock.send).to.have.been.callCount(16);
+                expect(midiOutputMock.send.mock.calls.length).to.equal(16);
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([176, 120, 0]));
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([177, 120, 0]));
                 expect(midiOutputMock.send).to.have.been.calledWith(new Uint8Array([178, 120, 0]));
