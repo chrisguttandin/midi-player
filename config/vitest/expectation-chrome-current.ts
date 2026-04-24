@@ -3,16 +3,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
-        browser: {
-            enabled: true,
-            instances: [
-                {
-                    browser: 'chrome',
-                    name: 'Chrome',
-                    provider: webdriverio({ capabilities: { 'goog:chromeOptions': { args: ['--headless'] } } })
-                }
-            ]
-        },
+        bail: 1,
+        browser: { enabled: true, instances: [{ browser: 'chrome', headless: true, name: 'Chrome', provider: webdriverio() }] },
         dir: 'test/expectation/chrome/current/',
         include: ['**/*.js'],
         watch: false
